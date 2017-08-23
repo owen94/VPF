@@ -130,9 +130,9 @@ hidden_list = [784, 196]
 
 
 CD = True
-path_w = '../rbm_baseline/PCD_10/weights_180.npy'
-path_bvis = '../rbm_baseline/PCD_10/bvis_180.npy'
-path_bhid = '../rbm_baseline/PCD_10/bhid_180.npy'
+path_w = '../rbm_baseline/CD_1/weights_180.npy'
+path_bvis = '../rbm_baseline/CD_1/bvis_180.npy'
+path_bhid = '../rbm_baseline/CD_1/bhid_180.npy'
 savepath1 = '../LLD/Samples/'
 
 W = np.load(path_w)
@@ -167,11 +167,11 @@ def test_error():
     corrupt_row = 12
     #cor = top_corruption(img_data, corrupt_row=8)
     #cor = top_corruption(img_data, corrupt_row= 8)
-    corruption_type = 'top'
-    cor = top_corruption(data, corrupt_row= corrupt_row, start=0)
+    # corruption_type = 'top'
+    # cor = top_corruption(data, corrupt_row= corrupt_row, start=0)
 
-    # corruption_type = 'bottom'
-    # cor = bottom_corruption(data, corrupt_row= corrupt_row, start=0)
+    corruption_type = 'bottom'
+    cor = bottom_corruption(data, corrupt_row= corrupt_row, start=0)
 
     # corruption_type = 'left'
     # cor = left_corruption(data, corrupt_row= corrupt_row)
@@ -209,9 +209,9 @@ def test_error():
 
 
 diff = 0
-for i in range(3):
+for i in range(2):
     diff += test_error()
-print(diff/3)
+print(diff/2)
 
 
 
