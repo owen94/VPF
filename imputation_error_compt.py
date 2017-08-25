@@ -115,31 +115,31 @@ def reconstruct(activations, W, b, corrupt_row, CD = False):
 
 
 ########################import filters and bias parameters # ##################
-# path_w = '../LLD/DBM_196_196_64/decay_1e-05/lr_0.001/weight_199.npy'
-# path_b = '../LLD/DBM_196_196_64/decay_1e-05/lr_0.001/bias_199.npy'
-# savepath1 = '../LLD/Samples/'
-#
-#
-# W = np.load(path_w)
-# b = np.load(path_b)
-# W = [W[0]]
-# b = [b[0]]
+path_w = '../LLD/DBM_196_196_64/decay_1e-05/lr_0.001/weight_199.npy'
+path_b = '../LLD/DBM_196_196_64/decay_1e-05/lr_0.001/bias_199.npy'
+savepath1 = '../LLD/Samples/'
+
+
+W = np.load(path_w)
+b = np.load(path_b)
+W = [W[0]]
+b = [b[0]]
 
 
 hidden_list = [784, 196]
 
 
-CD = True
-path_w = '../rbm_baseline/CD_1/weights_180.npy'
-path_bvis = '../rbm_baseline/CD_1/bvis_180.npy'
-path_bhid = '../rbm_baseline/CD_1/bhid_180.npy'
-savepath1 = '../LLD/Samples/'
-
-W = np.load(path_w)
-bvis = np.load(path_bvis)
-bhid = np.load(path_bhid)
-
-b = np.concatenate((bvis,bhid))
+CD = False
+# path_w = '../rbm_baseline/PCD_10/weights_180.npy'
+# path_bvis = '../rbm_baseline/PCD_10/bvis_180.npy'
+# path_bhid = '../rbm_baseline/PCD_10/bhid_180.npy'
+# savepath1 = '../LLD/Samples/'
+# print(path_w)
+#
+# W = np.load(path_w)
+# bvis = np.load(path_bvis)
+# bhid = np.load(path_bhid)
+# b = np.concatenate((bvis,bhid))
 
 
 # hidden_list = [784, 196, 196, 64]
@@ -147,7 +147,7 @@ b = np.concatenate((bvis,bhid))
 num_rbm = len(hidden_list) -1
 n_chains = 8
 n_samples = 1
-plot_every = 1000
+plot_every = 2
 image_data = np.zeros(
     (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
 )
@@ -170,17 +170,21 @@ def test_error():
     # corruption_type = 'top'
     # cor = top_corruption(data, corrupt_row= corrupt_row, start=0)
 
-    corruption_type = 'bottom'
-    cor = bottom_corruption(data, corrupt_row= corrupt_row, start=0)
+    # corruption_type = 'bottom'
+    # cor = bottom_corruption(data, corrupt_row= corrupt_row, start=0)
 
-    # corruption_type = 'left'
-    # cor = left_corruption(data, corrupt_row= corrupt_row)
+
+    corruption_type = 'left'
+    cor = left_corruption(data, corrupt_row= corrupt_row)
 
     # corruption_type = 'right'
     # cor = right_corruption(data,corrupt_row=corrupt_row)
 
+    print(corruption_type)
+
+
     ############################### Draw the results #################
-    feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=bhid)
+    feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
     feed_data = feed_samplor.get_mean_activation(input_data=cor, CD=CD)
     downact1 = reconstruct(activations=feed_data, W=W, b=b, corrupt_row=corrupt_row, CD=CD)    # reconstruct the images give the corruptions
 

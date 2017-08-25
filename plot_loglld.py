@@ -3,6 +3,12 @@ This file deal with the log-likelihood of the VPF.
 '''
 import numpy as np
 import matplotlib.pyplot as plt
+
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
+
 from DBM_1 import get_samples
 
 path1 = '/Users/liuzuozhu/MyGit/LLD/DBM_196_196_64/decay_0.001/lr_0.0001/'

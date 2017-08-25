@@ -2,6 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
+
+
 
 # a = [-102, -3, 100, 5, 6, 2, 7, -2, 10, 5,  5.8,5.9, 5.7, 6.9,3,5.5, 6.5,
 #      5, 16, 17, 29, 28, 39, 78, 88, 60, -6, -8.3, -8.3, -6.3, -6.5, -6.2, -18, -22, -19,

@@ -158,8 +158,8 @@ def reconstruct(activations, W, b, corrupt_row):
 
 
 ########################import filters and bias parameters # ##################
-path_w = '../LLD/DBM_196_196_64/decay_1e-05/lr_0.001/weight_199.npy'
-path_b = '../LLD/DBM_196_196_64/decay_1e-05/lr_0.001/bias_199.npy'
+path_w = '../LLD/DBM_196_196_64/decay_0.0001/lr_0.001/weight_199.npy'
+path_b = '../LLD/DBM_196_196_64/decay_0.0001/lr_0.001/bias_199.npy'
 savepath1 = '../LLD/Samples/'
 
 
@@ -174,7 +174,7 @@ hidden_list = [784, 196]
 num_rbm = len(hidden_list) -1
 n_chains = 8
 n_samples = 1
-plot_every = 20
+plot_every = 5
 image_data = np.zeros(
     (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
 )
@@ -200,14 +200,14 @@ corrupt_row = 12
 # corruption_type = 'top'
 # cor = top_corruption(img_data, corrupt_row= corrupt_row, start=0)
 
-# corruption_type = 'bottom'
-# cor = bottom_corruption(img_data, corrupt_row= corrupt_row, start=0)
+corruption_type = 'bottom'
+cor = bottom_corruption(img_data, corrupt_row= corrupt_row, start=0)
 
 # corruption_type = 'left'
 # cor = left_corruption(img_data, corrupt_row= corrupt_row)
 
-corruption_type = 'right'
-cor = right_corruption(img_data,corrupt_row=12)
+# corruption_type = 'right'
+# cor = right_corruption(img_data,corrupt_row=12)
 
 
 ############################### Draw the results #################
