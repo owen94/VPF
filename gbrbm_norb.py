@@ -178,10 +178,10 @@ def train_gdbm(data, hidden_list, decay, lr, undirected = False,  batch_sz = 40,
     if len(hidden_list) == 4:
 
         if undirected:
-            path = '../gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
+            path = '../LLD/gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
                + '_' + str(hidden_list[3]) + '/decay_' + str(decay[1]) + '/lr_' + str(lr)
         else:
-            path = '../gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
+            path = '../LLD/gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
                + '_' + str(hidden_list[3]) + '/decay_' + str(decay[1]) + '/lr_' + str(lr)
         dbm = DBM(hidden_list = hidden_list,
               input1=x1,
@@ -191,10 +191,10 @@ def train_gdbm(data, hidden_list, decay, lr, undirected = False,  batch_sz = 40,
 
     elif len(hidden_list) ==3:
         if undirected:
-            path = '../gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
+            path = '../LLD/gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
                + '/decay_' + str(decay[1]) + '/lr_' + str(lr)
         else:
-            path = '../gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
+            path = '../LLD/gaussian_dbm/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
                + '/decay_' + str(decay[1]) + '/lr_' + str(lr)
 
         dbm = DBM(hidden_list = hidden_list,
