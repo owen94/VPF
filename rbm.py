@@ -4,6 +4,8 @@ import tensorflow as tf
 import numpy as np
 import sys
 from util_gaussian import tf_xavier_init
+import matplotlib.pyplot as plt
+import os
 
 
 class RBM:
@@ -103,6 +105,10 @@ class RBM:
 
         n_data = data_x.shape[0]
 
+        path = '../LLD/gaussian_' + str(self.learning_rate) + '_' + str(self.momentum)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
         if batch_size > 0:
             n_batches = n_data // batch_size + (0 if n_data % batch_size == 0 else 1)
         else:
@@ -151,11 +157,17 @@ class RBM:
                     print('')
                 sys.stdout.flush()
 
-            if (e+1) % 50 == 0:
+            if (e+1) % 100 == 0:
                 w, bvis, bhid = self.get_weights()
-                np.save('gaussian_w_' + str(e) + '.npy',w)
-                np.save('gaussian_bvis_' + str(e) + '.npy',bvis)
-                np.save('gaussian_bhid_' + str(e) + '.npy',bhid)
+                np.save(path + '/gaussian_w_' + str(e) + '.npy',w)
+                np.save(path + '/gaussian_bvis_' + str(e) + '.npy',bvis)
+                np.save(path + '/gaussian_bhid_' + str(e) + '.npy',bhid)
+
+            if (e+1) % 50 == 0:
+                batch_x = data_x_cpy[0]
+                reconstruct = self.reconstruct(batch_x=batch_x)
+                plt.imshow((reconstruct.reshape(80, 80)),cmap='gray')
+                plt.savefig(path + '/samples.eps')
 
             errs = np.hstack([errs, epoch_errs])
 

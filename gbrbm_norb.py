@@ -146,22 +146,23 @@ class DBM(object):
 
 
 
-dataset = 'mnist.pkl.gz'
-f = gzip.open(dataset, 'rb')
-train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
-f.close()
-data = train_set[0]
-
+# dataset = 'mnist.pkl.gz'
+# f = gzip.open(dataset, 'rb')
+# train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
+# f.close()
+# data = train_set[0]
+#
 # data = np.load('../LLD/final_train_80*80.npy')
 # data = preprocessing.scale(data)
+#
 # print(data[0])
 # plt.imshow(data[50].reshape(80, 80),cmap='gray')
 # plt.savefig('../LLD/gaussian_dbm/original.eps')
-
-gbrbm = GBRBM(n_visible=784, n_hidden=196, learning_rate=0.01, momentum=0.95, use_tqdm=True,
-              sample_visible=True, sigma=1)
-
-errs = gbrbm.fit(data, n_epoches=50, batch_size=20)
+#
+# gbrbm = GBRBM(n_visible=784, n_hidden=196, learning_rate=0.01, momentum=0.95, use_tqdm=True,
+#               sample_visible=True, sigma=1)
+#
+# errs = gbrbm.fit(data, n_epoches=50, batch_size=20)
 
 
 #
@@ -171,7 +172,9 @@ errs = gbrbm.fit(data, n_epoches=50, batch_size=20)
 def feed_gaussian(data, w, bhid):
 
     activation = sigmoid(np.dot(data, w)+  bhid)
-    samples = np.random.binomial(n=1,p=activation,size=activation.shape)
+    #samples = np.random.binomial(n=1,p=activation,size=activation.shape)
+    binarizer = preprocessing.Binarizer(threshold=0.5)
+    samples =  binarizer.transform(activation)
     return activation, samples
 
 #################  Train the DBM with the input ############################
@@ -275,9 +278,9 @@ def train_gdbm(data, hidden_list, decay, lr, undirected = False,  batch_sz = 40,
         mean_epoch_error += [np.mean(mean_cost)]
         print('The cost for mpf in epoch %d is %f'% (n_epoch,mean_epoch_error[-1]))
 
-        if int(n_epoch+1) % 10 ==0:
-            filename = path + '/dbm_' + str(n_epoch) + '.pkl'
-            save(filename,dbm)
+        if int(n_epoch+1) % 50 ==0:
+            # filename = path + '/dbm_' + str(n_epoch) + '.pkl'
+            # save(filename,dbm)
 
             W = []
             b = []
@@ -342,7 +345,10 @@ def gaussian_samples(pre_samples, W, bvis, bhid, gibbs_steps):
     for i in range(gibbs_steps):
         #a =  (np.dot(pre_samples, W.T) + bvis)
         bottom_output = np.dot(pre_samples, W.T) + bvis
+        #bottom_output += np.random.normal(size=bottom_output.shape)
+
         top_output = sigmoid(np.dot(bottom_output, W) + bhid)
+
         #pre_samples = np.random.binomial(n=1, p=top_output,size=top_output.shape)
         pre_samples = top_output
 
@@ -352,78 +358,92 @@ def gaussian_samples(pre_samples, W, bvis, bhid, gibbs_steps):
 def _run():
     W = np.load('../LLD/gaussian/gaussian_w_499.npy')
     bhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
-    ori_data = np.load('../LLD/final_train_80*80.npy')
 
-
-    binary_data = feed_gaussian(data=ori_data,w=W,bhid=bhid)
+    activation, binary_data = feed_gaussian(data=ori_data,w=W,bhid=bhid)
     print(binary_data.shape)
 
     hidden_list = [4000, 2048, 1024, 512]
     decay = [0.0001, 0.0001, 0.0001, 0.0001]
     lr = 0.001
 
-    train_gdbm(data=binary_data,hidden_list=hidden_list,decay=decay,lr=lr, batch_sz=20, epoch=200)
+    train_gdbm(data=binary_data,hidden_list=hidden_list,decay=decay,lr=lr, batch_sz=20, epoch=300)
 
 def _sample_dbm():
     gW = np.load('../LLD/gaussian/gaussian_w_499.npy')
     gbhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
-    ori_data = np.load('../LLD/final_train_80*80.npy')
-    gb_vis = np.load('../LLD/gaussian/gaussian_bvis_499.npy')
 
     dW = np.load('../LLD/gaussian_dbm/weight_39.npy')
     db = np.load('../LLD/gaussian_dbm/bias_39.npy')
 
     hidden_list = [4000, 2048, 1024, 512]
 
-    binary_data = feed_gaussian(data=ori_data, w=gW,bhid=gbhid)
+    activation, binary_data = feed_gaussian(data=ori_data, w=gW,bhid=gbhid)
 
     print(binary_data.shape)
 
     downact1, pre_samples = pre_gaussian_samples(binary_data,hidden_list,dW,db, plot_every=5, num_samples=10)
 
-    savepath_dbm = '../LLD/gaussian_dbm/dbm_outut.npy'
-    np.save(savepath_dbm, pre_samples)
+    savepath_dbm1 = '../LLD/gaussian_dbm/dbm_act.npy'
+    np.save(savepath_dbm1, downact1)
 
-    return savepath_dbm
+    savepath_dbm2 = '../LLD/gaussian_dbm/dbm_presamples.npy'
+    np.save(savepath_dbm2, pre_samples)
+
+    return savepath_dbm1, savepath_dbm2
+
 
 def _samples_norb(savepath_dbm, gibbs_steps = 100):
 
-    pre_samples = np.load(savepath_dbm)
-    gW = np.load('../LLD/gaussian/gaussian_w_199.npy')
-    gbhid = np.load('../LLD/gaussian/gaussian_bhid_199.npy')
-    gb_vis = np.load('../LLD/gaussian/gaussian_bvis_199.npy')
+    #pre_samples = np.load(savepath_dbm)
+    gW = np.load('../LLD/gaussian/gaussian_w_499.npy')
+    gbhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
+    gb_vis = np.load('../LLD/gaussian/gaussian_bvis_499.npy')
 
-    ori_data = np.load('../LLD/final_train_80*80.npy')
+    #ori_data = data[:5,:]
+
     activation, pre_samples = feed_gaussian(data=ori_data, w=gW,bhid=gbhid)
-    activation = activation[:5,:]
+    #activation = activation
     print(pre_samples.shape)
 
     g_samples = gaussian_samples(activation,gW,gb_vis,gbhid,gibbs_steps=gibbs_steps)
 
     savepath = '../LLD/gaussian_dbm/generated_samples.npy'
     np.save(savepath, g_samples)
-    plt.imshow(g_samples[0].reshape(80, 80),cmap='gray')
-    plt.show()
 
 
-#_sample_dbm()
-# #
-# savepath_dbm = '../LLD/gaussian_dbm/dbm_outut.npy'
+
+ori_data = np.load('../LLD/final_train_80*80.npy')
+ori_data = preprocessing.scale(ori_data)
+_run()
+
 #
-# _samples_norb(savepath_dbm, gibbs_steps=10000)
+# #
+# prenorm_data = np.load('../LLD/final_train_80*80.npy')
+#
+# #norm_data = preprocessing.scale(prenorm_data)
+#
+# ori_data = preprocessing.scale(prenorm_data)[:5,:]
+#
+# # act, samples = _sample_dbm()
+#
+# _samples_norb(None, gibbs_steps=1)
 #
 # savepath = '../LLD/gaussian_dbm/generated_samples.npy'
+#
 #
 # g_samples = np.load(savepath)
 # #g_samples = preprocessing.scale(g_samples)
 # print(np.min(g_samples[0]))
 # print(g_samples.shape)
-# plt.imshow((g_samples[3].reshape(80, 80)),cmap='gray')
+#
+# i = 2
+# plt.imshow((ori_data[i].reshape(80, 80)),cmap='gray')
+# plt.savefig('../LLD/gaussian_dbm/orig.eps')
+# plt.imshow((g_samples[i].reshape(80, 80)),cmap='gray')
 # plt.savefig('../LLD/gaussian_dbm/samples.eps')
-#     #  run the previous functions all together, plot the final samples
 #
 #
-#
+
 
 
 
