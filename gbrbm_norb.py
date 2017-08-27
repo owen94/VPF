@@ -278,7 +278,7 @@ def train_gdbm(data, hidden_list, decay, lr, undirected = False,  batch_sz = 40,
         mean_epoch_error += [np.mean(mean_cost)]
         print('The cost for mpf in epoch %d is %f'% (n_epoch,mean_epoch_error[-1]))
 
-        if int(n_epoch+1) % 50 ==0:
+        if int(n_epoch+1) % 2 ==0:
             # filename = path + '/dbm_' + str(n_epoch) + '.pkl'
             # save(filename,dbm)
 
@@ -303,6 +303,9 @@ def train_gdbm(data, hidden_list, decay, lr, undirected = False,  batch_sz = 40,
     print ('Training took %f minutes' % (running_time / 60.))
 
 
+    return path, w_name, b_name
+
+
 ################  Generate Samples from the DBM ############################
 
 
@@ -318,9 +321,9 @@ def pre_gaussian_samples(data, hidden_list, W, b, plot_every = 5, num_samples = 
     n_chains = num_samples
     plot_every = plot_every
 
-    persistent_vis_chain = np.random.binomial(2, p = feed_mean_activation,size=(n_chains, hidden_list[-1]))
+    #persistent_vis_chain = np.random.binomial(2, p = feed_mean_activation,size=(n_chains, hidden_list[-1]))
     #persistent_vis_chain = feed_data[:num_samples,:]
-    #persistent_vis_chain = np.random.binomial(2, p = feed_data, size=feed_data.shape)
+    persistent_vis_chain = np.random.binomial(2, p = feed_data, size=feed_data.shape)
 
     v_samples = persistent_vis_chain
 
@@ -357,37 +360,44 @@ def gaussian_samples(pre_samples, W, bvis, bhid, gibbs_steps):
     return bottom_output
 
 
-def _run():
+def _run(ori_data, hidden_list, decay, lr, epoch):
     W = np.load('../LLD/gaussian/gaussian_w_499.npy')
     bhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
 
     activation, binary_data = feed_gaussian(data=ori_data,w=W,bhid=bhid)
     print(binary_data.shape)
 
-    hidden_list = [4000, 2048, 1024, 512]
-    decay = [0.01, 0.01, 0.01, 0.01]
-    lr = 0.001
+    hidden_list = hidden_list
+    decay = decay
+    lr = lr
 
-    train_gdbm(data=binary_data,hidden_list=hidden_list,decay=decay,lr=lr, batch_sz=20, epoch=300)
+    path, w_path, b_path = \
+        train_gdbm(data=binary_data,hidden_list=hidden_list,decay=decay,lr=lr, batch_sz=20, epoch=epoch)
 
-def _sample_dbm(plot_every = 5, num_samples = 10):
+    return path, w_path, b_path
+
+def _sample_dbm(samples_data, hidden_list, w_path, b_path, plot_every = 5, num_samples = 10):
     gW = np.load('../LLD/gaussian/gaussian_w_499.npy')
     gbhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
 
-    dW = np.load('../LLD/gaussian_dbm/weight_299.npy')
-    db = np.load('../LLD/gaussian_dbm/bias_299.npy')
+    # dW = np.load('../LLD/gaussian_dbm/weight_99.npy')
+    # db = np.load('../LLD/gaussian_dbm/bias_99.npy')
+
+    dW = np.load(w_path)
+    db = np.load(b_path)
 
     #hidden_list = [4000, 2048, 1024, 512]
 
-    hidden_list = [4000, 2048]
-    dW = [dW[0]]
-    db = [db[0]]
+    hidden_list = hidden_list
+    # dW = [dW[0]]
+    # db = [db[0]]
 
-    activation, binary_data = feed_gaussian(data=norm_data, w=gW,bhid=gbhid)
+    activation, binary_data = feed_gaussian(data=samples_data, w=gW,bhid=gbhid)
 
     print(binary_data.shape)
 
-    downact1, pre_samples = pre_gaussian_samples(binary_data,hidden_list,dW,db, plot_every=5, num_samples=num_samples)
+    downact1, pre_samples = pre_gaussian_samples(binary_data,hidden_list,dW,db,
+                                                 plot_every=plot_every, num_samples=num_samples)
 
     savepath_dbm1 = '../LLD/gaussian_dbm/dbm_act.npy'
     np.save(savepath_dbm1, downact1)
@@ -398,7 +408,7 @@ def _sample_dbm(plot_every = 5, num_samples = 10):
     return savepath_dbm1, savepath_dbm2
 
 
-def _samples_norb(savepath_dbm, gibbs_steps = 100):
+def _samples_norb(savepath_dbm, save_generated, gibbs_steps = 100):
 
     activation = np.load(savepath_dbm)
 
@@ -415,14 +425,63 @@ def _samples_norb(savepath_dbm, gibbs_steps = 100):
 
     g_samples = gaussian_samples(activation, gW, gb_vis, gbhid, gibbs_steps=gibbs_steps)
 
-    savepath = '../LLD/gaussian_dbm/generated_samples.npy'
+
+    savepath = save_generated + '/generated_samples.npy'
     np.save(savepath, g_samples)
 
+    return savepath
 
 
-ori_data = np.load('../LLD/final_train_80*80.npy')
-ori_data = preprocessing.scale(ori_data)
-_run()
+
+def test():
+
+    ori_data = np.load('../LLD/final_train_80*80.npy')
+    ori_data = preprocessing.scale(ori_data)
+
+    lr_list = [0.001, 0.0001]
+
+    hidden_list = [[4000, 2048, 1024], [4000, 4000, 2048] ]
+
+
+    decay_list = [ [0.01, 0.01, 0.01, 0.01], [0, 0, 0, 0],
+              [0.001, 0.001, 0.001, 0.001], [0.00001, 0.00001, 0.00001, 0.00001] ]
+
+
+    for lr in lr_list:
+        for hidden in hidden_list:
+            for decay in decay_list:
+                path, w_path, b_path = _run(ori_data,hidden, decay, lr, epoch=2)
+
+                prenorm_data = np.load('../LLD/final_train_80*80.npy')
+                norm_data = preprocessing.scale(prenorm_data)[:20,:]
+
+                # ori_data = norm_data[:5,:]
+                #
+                act, samples = _sample_dbm(samples_data=norm_data,
+                                           hidden_list= hidden,w_path= w_path, b_path=b_path,
+                                           plot_every=5, num_samples=20)
+
+                # act = '../LLD/gaussian_dbm/dbm_act.npy'
+                # samples = '../LLD/gaussian_dbm/dbm_presamples.npy'
+
+                savepath = _samples_norb(act, save_generated= path, gibbs_steps=1)
+
+                g_samples = np.load(savepath)
+                #g_samples = preprocessing.scale(g_samples)
+                print(np.min(g_samples[0]))
+                print(g_samples.shape)
+
+                i = 1
+                # plt.imshow((norm_data[i].reshape(80, 80)),cmap='gray')
+                # plt.savefig('../LLD/gaussian_dbm/orig.eps')
+                plt.imshow((g_samples[i].reshape(80, 80)),cmap='gray')
+
+                plt.savefig(path + '/samples.eps')
+                #
+
+
+
+test()
 
 
 # #
@@ -432,13 +491,13 @@ _run()
 #
 # # ori_data = norm_data[:5,:]
 # #
-# act, samples = _sample_dbm(plot_every=1, num_samples=20)
+# act, samples = _sample_dbm(plot_every=5, num_samples=20)
 #
 # # act = '../LLD/gaussian_dbm/dbm_act.npy'
 # # samples = '../LLD/gaussian_dbm/dbm_presamples.npy'
 #
 # _samples_norb(act, gibbs_steps=1)
-
+#
 # savepath = '../LLD/gaussian_dbm/generated_samples.npy'
 #
 # g_samples = np.load(savepath)
