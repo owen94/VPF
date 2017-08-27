@@ -278,7 +278,7 @@ def train_gdbm(data, hidden_list, decay, lr, undirected = False,  batch_sz = 40,
         mean_epoch_error += [np.mean(mean_cost)]
         print('The cost for mpf in epoch %d is %f'% (n_epoch,mean_epoch_error[-1]))
 
-        if int(n_epoch+1) % 2 ==0:
+        if int(n_epoch+1) % 200 ==0:
             # filename = path + '/dbm_' + str(n_epoch) + '.pkl'
             # save(filename,dbm)
 
@@ -450,7 +450,7 @@ def test():
     for lr in lr_list:
         for hidden in hidden_list:
             for decay in decay_list:
-                path, w_path, b_path = _run(ori_data,hidden, decay, lr, epoch=2)
+                path, w_path, b_path = _run(ori_data,hidden, decay, lr, epoch=200)
 
                 prenorm_data = np.load('../LLD/final_train_80*80.npy')
                 norm_data = preprocessing.scale(prenorm_data)[:20,:]
@@ -471,16 +471,13 @@ def test():
                 print(np.min(g_samples[0]))
                 print(g_samples.shape)
 
-                i = 1
-                # plt.imshow((norm_data[i].reshape(80, 80)),cmap='gray')
-                # plt.savefig('../LLD/gaussian_dbm/orig.eps')
-                plt.imshow((g_samples[i].reshape(80, 80)),cmap='gray')
+                for i in range(10):
+                    # plt.imshow((norm_data[i].reshape(80, 80)),cmap='gray')
+                    # plt.savefig('../LLD/gaussian_dbm/orig.eps')
+                    plt.imshow((g_samples[i].reshape(80, 80)),cmap='gray')
 
-                plt.savefig(path + '/samples.eps')
+                    plt.savefig(path + '/samples_' + str(i) + '.eps')
                 #
-
-
-
 test()
 
 
