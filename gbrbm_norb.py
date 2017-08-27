@@ -319,6 +319,8 @@ def pre_gaussian_samples(data, hidden_list, W, b, plot_every = 5, num_samples = 
     plot_every = plot_every
 
     persistent_vis_chain = np.random.binomial(2, p = feed_mean_activation,size=(n_chains, hidden_list[-1]))
+    #persistent_vis_chain = feed_data[:num_samples,:]
+    #persistent_vis_chain = np.random.binomial(2, p = feed_data, size=feed_data.shape)
 
     v_samples = persistent_vis_chain
 
@@ -363,25 +365,29 @@ def _run():
     print(binary_data.shape)
 
     hidden_list = [4000, 2048, 1024, 512]
-    decay = [0.0001, 0.0001, 0.0001, 0.0001]
+    decay = [0.01, 0.01, 0.01, 0.01]
     lr = 0.001
 
     train_gdbm(data=binary_data,hidden_list=hidden_list,decay=decay,lr=lr, batch_sz=20, epoch=300)
 
-def _sample_dbm():
+def _sample_dbm(plot_every = 5, num_samples = 10):
     gW = np.load('../LLD/gaussian/gaussian_w_499.npy')
     gbhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
 
-    dW = np.load('../LLD/gaussian_dbm/weight_39.npy')
-    db = np.load('../LLD/gaussian_dbm/bias_39.npy')
+    dW = np.load('../LLD/gaussian_dbm/weight_299.npy')
+    db = np.load('../LLD/gaussian_dbm/bias_299.npy')
 
-    hidden_list = [4000, 2048, 1024, 512]
+    #hidden_list = [4000, 2048, 1024, 512]
 
-    activation, binary_data = feed_gaussian(data=ori_data, w=gW,bhid=gbhid)
+    hidden_list = [4000, 2048]
+    dW = [dW[0]]
+    db = [db[0]]
+
+    activation, binary_data = feed_gaussian(data=norm_data, w=gW,bhid=gbhid)
 
     print(binary_data.shape)
 
-    downact1, pre_samples = pre_gaussian_samples(binary_data,hidden_list,dW,db, plot_every=5, num_samples=10)
+    downact1, pre_samples = pre_gaussian_samples(binary_data,hidden_list,dW,db, plot_every=5, num_samples=num_samples)
 
     savepath_dbm1 = '../LLD/gaussian_dbm/dbm_act.npy'
     np.save(savepath_dbm1, downact1)
@@ -394,18 +400,20 @@ def _sample_dbm():
 
 def _samples_norb(savepath_dbm, gibbs_steps = 100):
 
-    #pre_samples = np.load(savepath_dbm)
+    activation = np.load(savepath_dbm)
+
+    #activation = np.random.binomial(n=1, p =0.5, size=(10, 4000))
     gW = np.load('../LLD/gaussian/gaussian_w_499.npy')
     gbhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
     gb_vis = np.load('../LLD/gaussian/gaussian_bvis_499.npy')
 
     #ori_data = data[:5,:]
 
-    activation, pre_samples = feed_gaussian(data=ori_data, w=gW,bhid=gbhid)
-    #activation = activation
-    print(pre_samples.shape)
+    #activation, pre_samples = feed_gaussian(data=norm_data, w=gW,bhid=gbhid)
+    # activation = np.mean(activation, axis=0)
+    # activation = np.random.binomial(n=1,p=activation,size=(10, 4000))
 
-    g_samples = gaussian_samples(activation,gW,gb_vis,gbhid,gibbs_steps=gibbs_steps)
+    g_samples = gaussian_samples(activation, gW, gb_vis, gbhid, gibbs_steps=gibbs_steps)
 
     savepath = '../LLD/gaussian_dbm/generated_samples.npy'
     np.save(savepath, g_samples)
@@ -416,33 +424,34 @@ ori_data = np.load('../LLD/final_train_80*80.npy')
 ori_data = preprocessing.scale(ori_data)
 _run()
 
-#
+
 # #
 # prenorm_data = np.load('../LLD/final_train_80*80.npy')
 #
-# #norm_data = preprocessing.scale(prenorm_data)
+# norm_data = preprocessing.scale(prenorm_data)[:20,:]
 #
-# ori_data = preprocessing.scale(prenorm_data)[:5,:]
+# # ori_data = norm_data[:5,:]
+# #
+# act, samples = _sample_dbm(plot_every=1, num_samples=20)
 #
-# # act, samples = _sample_dbm()
+# # act = '../LLD/gaussian_dbm/dbm_act.npy'
+# # samples = '../LLD/gaussian_dbm/dbm_presamples.npy'
 #
-# _samples_norb(None, gibbs_steps=1)
-#
+# _samples_norb(act, gibbs_steps=1)
+
 # savepath = '../LLD/gaussian_dbm/generated_samples.npy'
-#
 #
 # g_samples = np.load(savepath)
 # #g_samples = preprocessing.scale(g_samples)
 # print(np.min(g_samples[0]))
 # print(g_samples.shape)
 #
-# i = 2
-# plt.imshow((ori_data[i].reshape(80, 80)),cmap='gray')
-# plt.savefig('../LLD/gaussian_dbm/orig.eps')
+# i = 1
+# # plt.imshow((norm_data[i].reshape(80, 80)),cmap='gray')
+# # plt.savefig('../LLD/gaussian_dbm/orig.eps')
 # plt.imshow((g_samples[i].reshape(80, 80)),cmap='gray')
 # plt.savefig('../LLD/gaussian_dbm/samples.eps')
-#
-#
+# #
 
 
 
