@@ -92,7 +92,6 @@ class dmpf_optimizer(object):
             b = np.zeros((visible_units,visible_units))
             c = np.ones((hidden_units,hidden_units)) - np.diagflat(np.ones(hidden_units))
             assert c[0,0] == 0
-
             intra_grad_u = np.concatenate((b,a), axis = 1)
             intra_grad_d = np.concatenate((a.T, c), axis=1)
             intra_grad = np.concatenate((intra_grad_u,intra_grad_d), axis = 0)

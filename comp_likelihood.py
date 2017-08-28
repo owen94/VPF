@@ -210,7 +210,7 @@ def compute_lls():
         lld += [l]
     print( np.mean(np.array(lld)))
 
-compute_lls()
+#compute_lls()
 
 
 

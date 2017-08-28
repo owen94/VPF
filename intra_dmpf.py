@@ -14,7 +14,6 @@ import os
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 from utils_mpf import *
-from comp_likelihood import *
 
 
 VISIBLE_UNITS = 784
@@ -140,10 +139,10 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
                 image.save(saveName)
 
 
-                saveName_w = path + '/weights_' + str(epoch_i) + '.npy'
-                saveName_b = path + '/bias_' + str(epoch_i) + '.npy'
-                np.save(saveName_w,W1)
-                np.save(saveName_b,b1)
+                # saveName_w = path + '/weights_' + str(epoch_i) + '.npy'
+                # saveName_b = path + '/bias_' + str(epoch_i) + '.npy'
+                # np.save(saveName_w,W1)
+                # np.save(saveName_b,b1)
 
         if epoch_i % 20 ==0:
             n_chains = 20
@@ -156,8 +155,8 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
             for idx in range(n_samples):
 
                 h_samples =  np.random.randint(2, size=(n_chains, hidden_units))
-                b_down = b[:visible_units]
-                b_up = b[visible_units:]
+                b_down = b1[:visible_units]
+                b_up = b1[visible_units:]
 
 
                 for j in range(plot_every):
