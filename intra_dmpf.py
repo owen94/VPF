@@ -231,12 +231,12 @@ if __name__ == '__main__':
     learning_rate_list = [0.001]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
-    hidden_units_list = [196, 400]
+    hidden_units_list = [400]
     n_samples_list = [1]
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    decay_list = [0.0001, 0 ]
+    decay_list = [0.0001, 0]
 
     for batch_size in batch_list:
         for n_samples in n_samples_list:
