@@ -34,7 +34,7 @@ def mix_in(x, w, b, temp, mix = 1):
     return x
 
 
-def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 50,  decay =0.0001,  batch_sz = 40, dataset = None,
+def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0.0001,  batch_sz = 40, dataset = None,
            n_round = 1):
 
     ################################################################
@@ -145,7 +145,7 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 50,  decay =0.
                 np.save(saveName_w,W1)
                 np.save(saveName_b,b1)
 
-        if epoch_i % 10 ==0:
+        if epoch_i % 20 ==0:
             n_chains = 20
             n_samples = 10
             plot_every = 5
@@ -167,8 +167,8 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 50,  decay =0.
                     upact1 = sigmoid(1/temp * (np.dot(down_sample1,W1)+b_up))
                     h_samples = np.random.binomial(n=1,p=upact1)
                     # mix in here
-                    x = np.concatenate((down_sample1,h_samples),axis=1)
-                    h_samples = mix_in(x=x,w=W,b=b, temp=temp)[:,visible_units:]
+                    # x = np.concatenate((down_sample1,h_samples),axis=1)
+                    # h_samples = mix_in(x=x,w=W,b=b, temp=temp)[:,visible_units:]
 
                 print(' ... plotting sample ', idx)
 
@@ -184,7 +184,7 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 50,  decay =0.
             image.save(path + '/samples_' + str(epoch_i) + '.png')
 
 if __name__ == '__main__':
-    learning_rate_list = [0.001, 0.0001]
+    learning_rate_list = [0.01, 0.1]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
     hidden_units_list = [196]
@@ -200,5 +200,5 @@ if __name__ == '__main__':
                 for decay in decay_list:
                     for learning_rate in learning_rate_list:
                             intra_dmpf(hidden_units = hidden_units,learning_rate = learning_rate, epsilon = 0.01,
-                                       temp = 0.5, decay=decay,
+                                       temp = 1, decay=decay,
                                    batch_sz=batch_size, n_round=1)
