@@ -212,11 +212,12 @@ class dmpf_optimizer(object):
     def intra_dmpf_cost(self, n_round =1,learning_rate = 0.001, decay=0.0001, feed_first = True):
 
         # feed self.input only as the data samples
-        self.asyc_gibbs(n_round=n_round, feedforward= feed_first) # update self.input
+        if not self.explicit_EM:
+            self.asyc_gibbs(n_round=n_round, feedforward= feed_first) # update self.input
+
 
         # add temperature here
         z = (1/2 - self.input) / self.temp
-
 
         energy_difference = z * (T.dot(self.input,self.W)+ self.b.reshape([1,-1]))
         cost = (self.epsilon/self.batch_sz) * T.sum(T.exp(energy_difference))

@@ -33,8 +33,42 @@ def mix_in(x, w, b, temp, mix = 1):
     return x
 
 
+def one_gibbs(data, W, b, node_i,temp):
+    input_w = W[:,node_i]
+    input_b = b[node_i]
+    activations = sigmoid(1/temp * (np.dot(data,input_w) +input_b))
+    flip = np.random.binomial(size=activations.shape,n=1,p=activations)
+    data[:,node_i] = flip
+
+    return data
+
+def asyc_gibbs(data, W, b, n_round = 1, temp=1, feedforward = False):
+    vis_units = data.shape[1]
+    hid_units = W.shape[0] - vis_units
+
+    if feedforward:
+        print('Feed forward the data initialize hidden states....')
+        feed_w = W[:vis_units,vis_units:]
+        feed_b = b[vis_units:]
+        activation = sigmoid(np.dot(data,feed_w) + feed_b)
+        hidden_samples = np.random.binomial(n=1,p= activation,size=activation.shape)
+        new_data = np.concatenate((data, hidden_samples),axis = 1)
+    else:
+        print('Randomly initialize hidden states....')
+        rand_h = np.random.binomial(n=1, p=0.5, size = (data.shape[0], hid_units))
+        new_data = np.concatenate((data, rand_h), axis = 1)
+
+    #assert self.input.shape == (self.batch_sz,self.hidden_units + self.visible_units)
+
+    for i in range(n_round):
+        for j in range(hid_units):
+            node_j = j + vis_units
+            new_data = one_gibbs(new_data, W, b, node_i= node_j,temp=temp)
+
+    return new_data
+
 def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0.0001,  batch_sz = 40, dataset = None,
-           n_round = 1):
+           n_round = 1, explicit_EM = True, feed_first = True):
 
     ################################################################
     ################## Loading the Data        #####################
@@ -82,12 +116,15 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
         temperature = temp,
         batch_sz =batch_sz)
 
-
-    new_data = theano.shared(value=np.asarray(data,dtype=theano.config.floatX),name= 'mnist',borrow = True)
+    if explicit_EM:
+        new_data  = theano.shared(value=np.asarray(np.zeros((data.shape[0],num_units)), dtype=theano.config.floatX),
+                                  name = 'train',borrow = True)
+    else:
+        new_data = theano.shared(value=np.asarray(data,dtype=theano.config.floatX),name= 'mnist',borrow = True)
 
 
     cost,updates = mpf_optimizer.intra_dmpf_cost(n_round= n_round,
-        learning_rate= learning_rate, decay=decay, feed_first= FEED_FIRST)
+        learning_rate= learning_rate, decay=decay, feed_first= feed_first)
 
     train_mpf = theano.function(
         [index],
@@ -111,6 +148,15 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
     start_time = timeit.default_timer()
 
     for epoch_i in range(epoch):
+
+        if explicit_EM:
+
+            W = mpf_optimizer.W.get_value(borrow = True)
+            b = mpf_optimizer.b.get_value(borrow = True)
+            sample_data = asyc_gibbs(data,W,b, n_round=n_round,temp=temp,feedforward=feed_first)
+            new_data.set_value(np.asarray(sample_data, dtype=theano.config.floatX))
+            assert sample_data.shape[1] == num_units
+
         mean_cost = []
         for batch_index in range(n_train_batches):
             mean_cost += [train_mpf(batch_index)]
@@ -183,7 +229,7 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
             image.save(path + '/samples_' + str(epoch_i) + '.png')
 
 if __name__ == '__main__':
-    learning_rate_list = [0.01, 0.1]
+    learning_rate_list = [0.001, 0.0001]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
     hidden_units_list = [196]
@@ -200,4 +246,4 @@ if __name__ == '__main__':
                     for learning_rate in learning_rate_list:
                             intra_dmpf(hidden_units = hidden_units,learning_rate = learning_rate, epsilon = 0.01,
                                        temp = 1, decay=decay,
-                                   batch_sz=batch_size, n_round=1)
+                                   batch_sz=batch_size, n_round=1, explicit_EM=True)
