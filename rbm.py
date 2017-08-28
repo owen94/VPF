@@ -6,6 +6,31 @@ import sys
 from util_gaussian import tf_xavier_init
 import matplotlib.pyplot as plt
 import os
+from utils_mpf import sigmoid
+
+
+
+def gaussian_samples(pre_samples, W, bvis, bhid, gibbs_steps):
+
+    for i in range(gibbs_steps):
+        #a =  (np.dot(pre_samples, W.T) + bvis)
+        bottom_output = np.dot(pre_samples, W.T) + bvis
+        #bottom_output += np.random.normal(size=bottom_output.shape)
+
+        top_output = sigmoid(np.dot(bottom_output, W) + bhid)
+
+        #pre_samples = np.random.binomial(n=1, p=top_output,size=top_output.shape)
+        pre_samples = top_output
+
+    return bottom_output
+
+def _samples_norb(gW, gbvis, gbhid, save_generated, gibbs_steps = 100, prior = None):
+
+    activation = np.random.binomial(n=1, p =prior, size=(10, 4000))
+    g_samples = gaussian_samples(activation, gW, gbvis, gbhid, gibbs_steps=gibbs_steps)
+    savepath = save_generated + '/generated_samples.npy'
+    np.save(savepath, g_samples)
+    return g_samples
 
 
 class RBM:
@@ -71,6 +96,7 @@ class RBM:
             self.compute_err = tf.reduce_mean(tf.square(self.x - self.compute_visible))
 
         init = tf.global_variables_initializer()
+
         self.sess = tf.Session()
         self.sess.run(init)
 
@@ -163,11 +189,22 @@ class RBM:
                 np.save(path + '/gaussian_bvis_' + str(e) + '.npy',bvis)
                 np.save(path + '/gaussian_bhid_' + str(e) + '.npy',bhid)
 
-            if (e+1) % 50 == 0:
-                batch_x = data_x_cpy[0]
-                reconstruct = self.reconstruct(batch_x=batch_x)
-                plt.imshow((reconstruct.reshape(80, 80)),cmap='gray')
-                plt.savefig(path + '/samples.eps')
+            if (e+1) % 100 == 0:
+                for i in range(10):
+                    batch_x = data_x_cpy[i][np.newaxis,:]
+                    reconstruct = self.reconstruct(batch_x=batch_x)
+                    plt.imshow((reconstruct.reshape(80, 80)),cmap='gray')
+                    plt.savefig(path + '/reconstruct_epoch_' +  str(e) +'_' +str(i) + '.eps')
+
+                w, bvis, bhid = self.get_weights()
+
+                prior = np.mean(sigmoid(np.dot(data_x_cpy, w) + bhid), axis=0)
+                generated_samples = _samples_norb(w, bvis, bhid, path, gibbs_steps=100, prior=prior)
+
+                for i in range(generated_samples.shape[0]):
+                    plt.imshow((generated_samples[i].reshape(80, 80)),cmap='gray')
+                    plt.savefig(path + '/samples_epoch_' +  str(e) +'_' +str(i) + '.eps')
+
 
             errs = np.hstack([errs, epoch_errs])
 

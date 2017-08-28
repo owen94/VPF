@@ -152,17 +152,17 @@ class DBM(object):
 # f.close()
 # data = train_set[0]
 #
-# data = np.load('../LLD/final_train_80*80.npy')
-# data = preprocessing.scale(data)
-#
-# print(data[0])
+data = np.load('../LLD/final_train_80*80.npy')
+data = preprocessing.scale(data)
+
+print(data[0])
 # plt.imshow(data[50].reshape(80, 80),cmap='gray')
 # plt.savefig('../LLD/gaussian_dbm/original.eps')
-#
-# gbrbm = GBRBM(n_visible=784, n_hidden=196, learning_rate=0.01, momentum=0.95, use_tqdm=True,
-#               sample_visible=True, sigma=1)
-#
-# errs = gbrbm.fit(data, n_epoches=50, batch_size=20)
+
+gbrbm = GBRBM(n_visible=6400, n_hidden=4000, learning_rate=0.001, momentum=0.95, use_tqdm=True,
+              sample_visible=False, sigma=1)
+
+errs = gbrbm.fit(data, n_epoches=300, batch_size=20)
 
 
 #
@@ -408,11 +408,11 @@ def _sample_dbm(samples_data, hidden_list, w_path, b_path, plot_every = 5, num_s
     return savepath_dbm1, savepath_dbm2
 
 
-def _samples_norb(savepath_dbm, save_generated, gibbs_steps = 100):
+def _samples_norb(savepath_dbm, save_generated, gibbs_steps = 100, prior = None):
 
-    activation = np.load(savepath_dbm)
+    #activation = np.load(savepath_dbm)
 
-    #activation = np.random.binomial(n=1, p =0.5, size=(10, 4000))
+    activation = np.random.binomial(n=1, p =prior, size=(10, 4000))
     gW = np.load('../LLD/gaussian/gaussian_w_499.npy')
     gbhid = np.load('../LLD/gaussian/gaussian_bhid_499.npy')
     gb_vis = np.load('../LLD/gaussian/gaussian_bvis_499.npy')
@@ -478,20 +478,24 @@ def test():
 
                     plt.savefig(path + '/samples_' + str(i) + '.eps')
                 #
-test()
+
+# test()
 
 
-# #
+# # #
 # prenorm_data = np.load('../LLD/final_train_80*80.npy')
 #
-# norm_data = preprocessing.scale(prenorm_data)[:20,:]
-#
-# # ori_data = norm_data[:5,:]
+# # norm_data = preprocessing.scale(prenorm_data)[:20,:]
 # #
-# act, samples = _sample_dbm(plot_every=5, num_samples=20)
+# # # ori_data = norm_data[:5,:]
+# # #
+# # act, samples = _sample_dbm(plot_every=5, num_samples=20)
+# #
+# act = '../LLD/gaussian_dbm/dbm_act.npy'
+# # # samples = '../LLD/gaussian_dbm/dbm_presamples.npy'
+# #
+# savepath = 'LLD/gaussian/test_grbm.npy'
 #
-# # act = '../LLD/gaussian_dbm/dbm_act.npy'
-# # samples = '../LLD/gaussian_dbm/dbm_presamples.npy'
 #
 # _samples_norb(act, gibbs_steps=1)
 #
