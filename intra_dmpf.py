@@ -47,19 +47,18 @@ def asyc_gibbs(data, W, b, n_round = 1, temp=1, feedforward = False):
     hid_units = W.shape[0] - vis_units
 
     if feedforward:
-        print('Feed forward the data initialize hidden states....')
+        #print('Feed forward the data initialize hidden states....')
         feed_w = W[:vis_units,vis_units:]
         feed_b = b[vis_units:]
         activation = sigmoid(np.dot(data,feed_w) + feed_b)
         hidden_samples = np.random.binomial(n=1,p= activation,size=activation.shape)
         new_data = np.concatenate((data, hidden_samples),axis = 1)
     else:
-        print('Randomly initialize hidden states....')
+        #print('Randomly initialize hidden states....')
         rand_h = np.random.binomial(n=1, p=0.5, size = (data.shape[0], hid_units))
         new_data = np.concatenate((data, rand_h), axis = 1)
 
     #assert self.input.shape == (self.batch_sz,self.hidden_units + self.visible_units)
-
     for i in range(n_round):
         for j in range(hid_units):
             node_j = j + vis_units
@@ -67,7 +66,7 @@ def asyc_gibbs(data, W, b, n_round = 1, temp=1, feedforward = False):
 
     return new_data
 
-def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0.0001,  batch_sz = 40, dataset = None,
+def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 400,  decay =0.0001,  batch_sz = 40, dataset = None,
            n_round = 1, explicit_EM = True, feed_first = True):
 
     ################################################################
@@ -168,7 +167,7 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
         W1 = W[:visible_units,visible_units:]
         b1 = mpf_optimizer.b.get_value(borrow = True)
 
-        if int(epoch_i+1) % 5 ==0:
+        if int(epoch_i+1) % 50 ==0:
 
                 saveName = path + '/weights_' + str(epoch_i) + '.png'
                 tile_shape = (10, hidden_units//10)
@@ -185,12 +184,12 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
                 image.save(saveName)
 
 
-                # saveName_w = path + '/weights_' + str(epoch_i) + '.npy'
-                # saveName_b = path + '/bias_' + str(epoch_i) + '.npy'
-                # np.save(saveName_w,W1)
-                # np.save(saveName_b,b1)
+                saveName_w = path + '/weights_' + str(epoch_i) + '.npy'
+                saveName_b = path + '/bias_' + str(epoch_i) + '.npy'
+                np.save(saveName_w,W1)
+                np.save(saveName_b,b1)
 
-        if epoch_i % 20 ==0:
+        if epoch_i % 50 ==0:
             n_chains = 20
             n_samples = 10
             plot_every = 5
@@ -229,15 +228,15 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 100,  decay =0
             image.save(path + '/samples_' + str(epoch_i) + '.png')
 
 if __name__ == '__main__':
-    learning_rate_list = [0.001, 0.0001]
+    learning_rate_list = [0.001]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
-    hidden_units_list = [196]
+    hidden_units_list = [196, 400]
     n_samples_list = [1]
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    decay_list = [0.0001]
+    decay_list = [0.0001, 0 ]
 
     for batch_size in batch_list:
         for n_samples in n_samples_list:
