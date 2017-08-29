@@ -462,7 +462,7 @@ def train_dbm(hidden_list, decay, lr, undirected = False,  batch_sz = 40, epoch 
 if __name__ == '__main__':
 
 
-    learning_rate_list = [0.001]
+    learning_rate_list = [0.001, 0.0001]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
     hidden_units_list = [[784, 196, 196, 64]]
@@ -470,7 +470,8 @@ if __name__ == '__main__':
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
+    decay_list = [[0.0001, 0.0001, 0.0001, 0.0001], [0.00001, 0.00001, 0.00001, 0.00001],
+                  [0.001, 0.001, 0.001, 0.001]]
 
     undirected_list = [False]
     for undirected in undirected_list:
