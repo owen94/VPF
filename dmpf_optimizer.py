@@ -74,9 +74,9 @@ class dmpf_optimizer(object):
 
         if self.zero_grad is None:
             a = np.ones((visible_units,hidden_units))
-            b = np.zeros((visible_units,visible_units))
+            a1 = np.zeros((visible_units,visible_units))
             c = np.zeros((hidden_units,hidden_units))
-            zero_grad_u = np.concatenate((b,a),axis = 1)
+            zero_grad_u = np.concatenate((a1,a),axis = 1)
             zero_grad_d = np.concatenate((a.T,c),axis=1)
             zero_grad = np.concatenate((zero_grad_u,zero_grad_d),axis=0)
             self.zero_grad = theano.shared(value=np.asarray(zero_grad,dtype=theano.config.floatX),
@@ -89,15 +89,15 @@ class dmpf_optimizer(object):
         self.intra_grad = None
         if self.intra_grad is None:
             a = np.ones((visible_units,hidden_units))
-            b = np.zeros((visible_units,visible_units))
+            a1 = np.zeros((visible_units,visible_units))
             c = np.ones((hidden_units,hidden_units)) - np.diagflat(np.ones(hidden_units))
             assert c[0,0] == 0
-            intra_grad_u = np.concatenate((b,a), axis = 1)
+            assert c[0,1] == 1
+            intra_grad_u = np.concatenate((a1, a), axis = 1)
             intra_grad_d = np.concatenate((a.T, c), axis=1)
             intra_grad = np.concatenate((intra_grad_u,intra_grad_d), axis = 0)
             self.intra_grad = theano.shared(value=np.asarray(intra_grad,dtype=theano.config.floatX),
                                             name='intra_grad', borrow = True)
-
 
         #self.params = []
 

@@ -513,7 +513,7 @@ def test_rbm(learning_rate=0.01, training_epochs=200,
     print ('Training took %f minutes' % (pretraining_time / 60.))
 
 
-def test_grbm(learning_rate=0.01, training_epochs=200,
+def test_grbm(learning_rate=0.001, training_epochs=200,
               batch_size=20,
              n_chains=20, n_samples=10,
              n_hidden=4000):
@@ -521,6 +521,8 @@ def test_grbm(learning_rate=0.01, training_epochs=200,
     data = np.load('../LLD/final_train_80*80.npy')
 
     data = preprocessing.scale(data)
+
+
 
     datasets = theano.shared(value=np.asarray(data, dtype=theano.config.floatX),name='norb', borrow=True)
 
@@ -572,7 +574,6 @@ def test_grbm(learning_rate=0.01, training_epochs=200,
     for epoch in range(training_epochs):
 
         # go through the training set
-        print('Training epoch')
         mean_cost = []
         for batch_index in range(int(n_train_batches)):
             mean_cost += [train_rbm(batch_index)]
