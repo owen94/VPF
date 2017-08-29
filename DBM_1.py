@@ -182,7 +182,7 @@ class DBM(object):
 
 
 
-def train_dbm(hidden_list, decay, lr, undirected = False,  batch_sz = 40, epoch = 200):
+def train_dbm(hidden_list, decay, lr, undirected = False,  batch_sz = 40, epoch = 400):
 
     #data = load_mnist()
     ori_data, labels = read(digits = np.arange(10))
