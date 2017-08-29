@@ -213,7 +213,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
         print('The cost for mpf in epoch %d is %f'% (n_epoch,mean_epoch_error[-1]))
 
 
-        if int(n_epoch+1) % 50 ==0:
+        if int(n_epoch+1) % 100 ==0:
 
             saveName = path + '/weights_' + str(n_epoch) + '.png'
             tile_shape = (10, hidden_list[1]//10)
@@ -232,12 +232,12 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
                     )
             image.save(saveName)
 
-        if int(n_epoch+1) % 100 ==0:
-
             w_name = path + '/weight_' + str(n_epoch) + '.npy'
             b_name = path + '/bias_' + str(n_epoch) + '.npy'
             np.save(w_name,W)
             np.save(b_name,b)
+
+        if int(n_epoch+1) % 20 ==0:
 
             n_chains = 20
             n_samples = 10
@@ -245,7 +245,6 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
             image_data = np.zeros(
                 (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
             )
-
 
             feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
             feed_data = feed_samplor.get_mean_activation(input_data= data)
