@@ -51,8 +51,6 @@ class Deep_intra(object):
         elif len(hidden_list) == 3:
             self.input = [self.input1, self.input2]
 
-
-
     def get_intra_update(self, decay_list = [], learning_rate = 0.001):
         updates = []
         cost = 0
@@ -186,7 +184,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
             samplor = get_samples(hidden_list= hidden_list, W=W, b = b)
             forward_act, forward_data = samplor.forward_pass(input_data= data)
             for i in range(num_rbm):
-                assert forward_data[i].shape[0] == hidden_list[i] + hidden_list[i+1]
+                assert forward_data[i].shape[1] == hidden_list[i] + hidden_list[i+1]
                 sample_data = asyc_gibbs(forward_data[i],W[i],b[i], n_round=n_round,temp=temp,vis_units=hidden_list[i],
                                          hid_units=hidden_list[i+1])
                 new_data[i].set_value(np.asarray(sample_data, dtype=theano.config.floatX))
