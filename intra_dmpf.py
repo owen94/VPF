@@ -58,7 +58,6 @@ def asyc_gibbs(data, W, b, vis_units, hid_units, n_round = 1, temp=1):
     #     #rand_h = np.random.binomial(n=1, p=0.5, size = (data.shape[0], hid_units))
     #     new_data = data
     #assert self.input.shape == (self.batch_sz,self.hidden_units + self.visible_units)
-    assert data.shape[0] == data.shape[1]
     for i in range(n_round):
         for j in range(hid_units):
             node_j = j + vis_units
