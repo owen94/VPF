@@ -192,7 +192,7 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 400,  decay =0
         if epoch_i % 50 ==0:
             n_chains = 20
             n_samples = 10
-            plot_every = 5
+            plot_every = 1
             image_data = np.zeros(
                 (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
             )
@@ -216,7 +216,6 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 400,  decay =0
 
                 print(' ... plotting sample ', idx)
 
-                downact1 = sigmoid(np.dot(h_samples,W1.T) + b_down )
                 image_data[29 * idx:29 * idx + 28, :] = tile_raster_images(
                     X= downact1,
                     img_shape=(28, 28),
