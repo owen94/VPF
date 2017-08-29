@@ -153,6 +153,7 @@ class DBM(object):
 # data = train_set[0]
 #
 data = np.load('../LLD/final_train_80*80.npy')
+
 data = preprocessing.scale(data)
 
 print(data[0])
