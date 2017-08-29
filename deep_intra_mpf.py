@@ -282,6 +282,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
             image = Image.fromarray(image_data)
             image.save(path + '/samples_' + str(n_epoch) + '.png')
 
+
         #
         # if n_epoch % 5 == 0:
         #     W = []

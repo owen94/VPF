@@ -9,7 +9,7 @@ import os
 import timeit
 from PIL import Image
 from comp_likelihood import gpu_parzen, get_ll
-
+from get_samples import get_samples
 
 
 

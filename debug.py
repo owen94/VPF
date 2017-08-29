@@ -4,17 +4,15 @@ import numpy as np
 import gzip, pickle, random
 from sklearn import preprocessing
 import matplotlib.pyplot as plt
-from utils_mpf import  *
+from utils_mpf import read
 #from DBM import get_samples
 from PIL import Image
 
-
-dataset = 'mnist.pkl.gz'
-f = gzip.open(dataset, 'rb')
-train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
-f.close()
+data, labels = read(digits = np.arange(10))
+data = data / 255
+print(np.max(data[0]))
 binarizer = preprocessing.Binarizer(threshold=0.5)
-data =  binarizer.transform(train_set[0])
-
-img_index = random.sample(range(0, data.shape[0]), 1)
-print(img_index)
+data =  binarizer.transform(data)
+plt.imshow(data[0].reshape(28,28))
+plt.savefig('../LLD/fashion.png')
+print(data.shape)
