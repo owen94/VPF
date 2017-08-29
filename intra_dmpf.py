@@ -42,29 +42,29 @@ def one_gibbs(data, W, b, node_i,temp):
 
     return data
 
-def asyc_gibbs(data, W, b, n_round = 1, temp=1, feedforward = False):
-    vis_units = data.shape[1]
-    hid_units = W.shape[0] - vis_units
+def asyc_gibbs(data, W, b, vis_units, hid_units, n_round = 1, temp=1):
+    # vis_units = data.shape[1]
+    # hid_units = W.shape[0] - vis_units
 
-    if feedforward:
-        #print('Feed forward the data initialize hidden states....')
-        feed_w = W[:vis_units,vis_units:]
-        feed_b = b[vis_units:]
-        activation = sigmoid(np.dot(data,feed_w) + feed_b)
-        hidden_samples = np.random.binomial(n=1,p= activation,size=activation.shape)
-        new_data = np.concatenate((data, hidden_samples),axis = 1)
-    else:
-        #print('Randomly initialize hidden states....')
-        rand_h = np.random.binomial(n=1, p=0.5, size = (data.shape[0], hid_units))
-        new_data = np.concatenate((data, rand_h), axis = 1)
-
+    # if feedforward:
+    #     #print('Feed forward the data initialize hidden states....')
+    #     feed_w = W[:vis_units,vis_units:]
+    #     feed_b = b[vis_units:]
+    #     activation = sigmoid(np.dot(data,feed_w) + feed_b)
+    #     hidden_samples = np.random.binomial(n=1,p= activation,size=activation.shape)
+    #     new_data = np.concatenate((data, hidden_samples),axis = 1)
+    # else:
+    #     #print('Randomly initialize hidden states....')
+    #     #rand_h = np.random.binomial(n=1, p=0.5, size = (data.shape[0], hid_units))
+    #     new_data = data
     #assert self.input.shape == (self.batch_sz,self.hidden_units + self.visible_units)
+    assert data.shape[0] == data.shape[1]
     for i in range(n_round):
         for j in range(hid_units):
             node_j = j + vis_units
-            new_data = one_gibbs(new_data, W, b, node_i= node_j,temp=temp)
+            data = one_gibbs(data, W, b, node_i= node_j,temp=temp)
 
-    return new_data
+    return data
 
 def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 400,  decay =0.0001,  batch_sz = 40, dataset = None,
            n_round = 1, explicit_EM = True, feed_first = True):
@@ -146,15 +146,37 @@ def intra_dmpf(hidden_units,learning_rate, epsilon, temp, epoch = 400,  decay =0
 
     start_time = timeit.default_timer()
 
+    if not feed_first:
+        rand_h = np.random.binomial(n=1, p=0.5, size = (data.shape[0], hidden_units))
+        feed_first_Data = np.concatenate((data, rand_h),axis=1)
+
+
     for epoch_i in range(epoch):
 
         if explicit_EM:
 
             W = mpf_optimizer.W.get_value(borrow = True)
             b = mpf_optimizer.b.get_value(borrow = True)
-            sample_data = asyc_gibbs(data,W,b, n_round=n_round,temp=temp,feedforward=feed_first)
-            new_data.set_value(np.asarray(sample_data, dtype=theano.config.floatX))
-            assert sample_data.shape[1] == num_units
+
+            if feed_first:
+                feed_w = W[:visible_units,visible_units:]
+                feed_b = b[visible_units:]
+                activation = sigmoid(np.dot(data,feed_w) + feed_b)
+                hidden_samples = np.random.binomial(n=1,p= activation,size=activation.shape)
+                gibbs_start = np.concatenate((data, hidden_samples),axis=1)
+                sample_data = asyc_gibbs(gibbs_start, W, b, visible_units, hidden_units,
+                                         n_round=n_round,temp=temp)
+                new_data.set_value(np.asarray(sample_data, dtype=theano.config.floatX))
+                assert sample_data.shape[1] == num_units
+
+            elif not feed_first:
+                assert feed_first_Data.shape[1] == num_units
+                sample_data = asyc_gibbs(feed_first_Data, W, b, visible_units, hidden_units,
+                                         n_round=n_round,temp=temp)
+                new_data.set_value(np.asarray(sample_data, dtype=theano.config.floatX))
+                feed_first_Data = sample_data
+                assert feed_first is False
+                assert sample_data.shape[1] == num_units
 
         mean_cost = []
         for batch_index in range(n_train_batches):

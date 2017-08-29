@@ -15,10 +15,11 @@ from comp_likelihood import gpu_parzen, get_ll
 
 class DBM(object):
 
-    def __init__(self, hidden_list = [] , batch_sz = 40, input1 = None, input2 = None, input3 = None):
+    def __init__(self, hidden_list = [] , temp = 1, batch_sz = 40, input1 = None, input2 = None, input3 = None):
 
         self.num_rbm = int(len(hidden_list) - 1 )
         self.hidden_list = hidden_list
+        self.temp = temp
 
         self.W = []
         self.b = []
@@ -99,6 +100,7 @@ class DBM(object):
             updates += update_rbm
 
         return cost, updates
+
 
 
 def train_dbm(hidden_list, decay, lr, undirected = False,  batch_sz = 40, epoch = 400):
