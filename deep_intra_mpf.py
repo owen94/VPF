@@ -240,52 +240,52 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
             np.save(w_name,W)
             np.save(b_name,b)
 
-        if int(n_epoch+1) % 20 ==0:
+        # if int(n_epoch+1) % 20 ==0:
+        #
+        #     n_chains = 20
+        #     n_samples = 10
+        #     plot_every = 5
+        #     image_data = np.zeros(
+        #         (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
+        #     )
+        #
+        #     feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
+        #     feed_data = feed_samplor.get_mean_activation(input_data= data)
+        #
+        #     feed_mean_activation = np.mean(feed_data, axis=0)
+        #     feed_initial = np.random.binomial(n=1, p= feed_mean_activation, size=(n_samples, hidden_list[-1]))
+        #
+        #     for idx in range(n_samples):
+        #         #persistent_vis_chain = np.random.randint(2,size=(n_chains, hidden_list[-1]))
+        #
+        #         v_samples = feed_initial
+        #
+        #         for i in range(num_rbm):
+        #
+        #             vis_units = hidden_list[num_rbm-i - 1]
+        #             W_sample = W[num_rbm - i -1 ][:vis_units,vis_units:]
+        #             b_down = b[num_rbm - i -1 ][:vis_units]
+        #             b_up = b[num_rbm - i -1 ][vis_units:]
+        #
+        #             for j in range(plot_every):
+        #                 downact1 = sigmoid(np.dot(v_samples,W_sample.T) + b_down )
+        #                 down_sample1 = np.random.binomial(n=1, p= downact1)
+        #                 upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
+        #                 v_samples = np.random.binomial(n=1,p=upact1)
+        #             v_samples = down_sample1
+        #         print(' ... plotting sample ', idx)
+        #
+        #         image_data[29 * idx:29 * idx + 28, :] = tile_raster_images(
+        #             X= downact1,
+        #             img_shape=(28, 28),
+        #             tile_shape=(1, n_chains),
+        #             tile_spacing=(1, 1)
+        #         )
+        #
+        #     image = Image.fromarray(image_data)
+        #     image.save(path + '/samples_' + str(n_epoch) + '.png')
 
-            n_chains = 20
-            n_samples = 10
-            plot_every = 5
-            image_data = np.zeros(
-                (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
-            )
-
-            feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
-            feed_data = feed_samplor.get_mean_activation(input_data= data)
-
-            feed_mean_activation = np.mean(feed_data, axis=0)
-            feed_initial = np.random.binomial(n=1, p= feed_mean_activation, size=(n_samples, hidden_list[-1]))
-
-            for idx in range(n_samples):
-                #persistent_vis_chain = np.random.randint(2,size=(n_chains, hidden_list[-1]))
-
-                v_samples = feed_initial
-
-                for i in range(num_rbm):
-
-                    vis_units = hidden_list[num_rbm-i - 1]
-                    W_sample = W[num_rbm - i -1 ][:vis_units,vis_units:]
-                    b_down = b[num_rbm - i -1 ][:vis_units]
-                    b_up = b[num_rbm - i -1 ][vis_units:]
-
-                    for j in range(plot_every):
-                        downact1 = sigmoid(np.dot(v_samples,W_sample.T) + b_down )
-                        down_sample1 = np.random.binomial(n=1, p= downact1)
-                        upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
-                        v_samples = np.random.binomial(n=1,p=upact1)
-                    v_samples = down_sample1
-                print(' ... plotting sample ', idx)
-
-                image_data[29 * idx:29 * idx + 28, :] = tile_raster_images(
-                    X= downact1,
-                    img_shape=(28, 28),
-                    tile_shape=(1, n_chains),
-                    tile_spacing=(1, 1)
-                )
-
-            image = Image.fromarray(image_data)
-            image.save(path + '/samples_' + str(n_epoch) + '.png')
-
-        if int(n_epoch+1) % 100 == 0:
+        if int(n_epoch+1) % 5 == 0:
             W = []
             b = []
             for i in range(num_rbm):
@@ -337,20 +337,20 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
                     v_samples = np.random.binomial(n=1,p=upact1)
 
                     x = np.concatenate((down_sample1,v_samples),axis=1)
-                    v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp)[:,vis_units:]
+                    v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=1)[:,vis_units:]
 
 
                 v_samples = down_sample1
 
             parzen_sample = downact1
             # compute the log-likelihood for the training data
-            epoch_train_lld = get_ll(x=train_data[:10000],
-                                     gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=20)
-            train_mean_lld = np.mean(np.array(epoch_train_lld))
-            train_std_lld = np.std(np.array(epoch_train_lld))
-            train_lld += [train_mean_lld]
-            train_std += [train_std_lld]
-
+            # epoch_train_lld = get_ll(x=train_data[:1],
+            #                          gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=20)
+            # train_mean_lld = np.mean(np.array(epoch_train_lld))
+            # train_std_lld = np.std(np.array(epoch_train_lld))
+            # train_lld += [train_mean_lld]
+            # train_std += [train_std_lld]
+            train_mean_lld = 0
 
             # comppute the log-likelihood for the test data
             epoch_test_lld = get_ll(x=test_data, gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=10)
@@ -399,9 +399,9 @@ if __name__ == '__main__':
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    temp_list = [1, 0.5]
+    temp_list = [1]
     decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
-    feed_list = [False]
+    feed_list = [True]
 
     undirected_list = [False]
     for undirected in undirected_list:

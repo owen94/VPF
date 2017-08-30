@@ -88,12 +88,13 @@ for n_iter in path_list:
     for i in range(1):
         new_path_w = path_w + str(n_iter) + '.npy'
         new_path_b = path_b + str(n_iter) + '.npy'
-        lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=3, mix_steps=1, random_initial= False)
+        lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=3, mix_steps=1, random_initial= True)
 
         iter_lld += [lld_1]
     test_lld += np.mean(iter_lld)
     test_std += np.std(iter_lld)
 
+print(test_lld)
 savename_1 = save_path + 'check_lld.npy'
 savename_2 = save_path + 'check_std.npy'
 np.save(savename_1, test_lld)

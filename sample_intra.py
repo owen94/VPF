@@ -31,8 +31,8 @@ hidden_list = [784, 196, 196, 64]
 
 num_rbm = len(hidden_list) -1
 
-n_chains = 15
-n_samples = 10
+n_chains = 8
+n_samples = 8
 plot_every = 3
 
 temp = 1
@@ -93,9 +93,9 @@ for idx in range(n_samples):
             down_sample1 = np.random.binomial(n=1, p= downact1)
             upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
             v_samples = np.random.binomial(n=1,p=upact1)
-
+            #
             x = np.concatenate((down_sample1,v_samples),axis=1)
-            v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=4)[:,vis_units:]
+            v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=1)[:,vis_units:]
 
 
         v_samples = down_sample1

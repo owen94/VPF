@@ -30,13 +30,13 @@ from get_samples import get_samples
 # path_b = '../DBM_results/Samples/196_64/bias_599.npy'
 # savepath1 = '../DBM_results/Samples/196_64'
 
-path_w = '../LLD/Fashion_MNIST/DBM_196_196_64/decay_0.0001/lr_0.001/weight_399.npy'
-path_b = '../LLD/Fashion_MNIST/DBM_196_196_64/decay_0.0001/lr_0.001/bias_399.npy'
-savepath1 = '../LLD/Fashion_MNIST/Samples/'
+# path_w = '../LLD/Fashion_MNIST/DBM_196_196_64/decay_0.0001/lr_0.001/weight_399.npy'
+# path_b = '../LLD/Fashion_MNIST/DBM_196_196_64/decay_0.0001/lr_0.001/bias_399.npy'
+# savepath1 = '../LLD/Fashion_MNIST/Samples/'
 
-# path_w = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/weight_299.npy'
-# path_b = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/bias_299.npy'
-# savepath1 = '../intra_mpf/Samples/'
+path_w = '../LLD/DBM_196_196_64/decay_0.0001/lr_0.001/weight_499.npy'
+path_b = '../LLD/DBM_196_196_64/decay_0.0001/lr_0.001/bias_499.npy'
+savepath1 = '../LLD/Samples/'
 
 # path_w = '../LLD/hidden_100/decay_0.0001/lr_0.0001/bsz_40/weights_199.npy'
 # path_b = '../LLD/hidden_100/decay_0.0001/lr_0.0001/bsz_40/bias_199.npy'
@@ -54,9 +54,9 @@ num_rbm = len(hidden_list) -1
 #     W.append(dbm4.W[i].get_value(borrow = True))
 #     b.append(dbm4.b[i].get_value(borrow = True))
 
-n_chains = 10
+n_chains = 8
 n_samples = 8
-plot_every = 4
+plot_every = 5
 image_data = np.zeros(
     (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
 )
@@ -65,20 +65,20 @@ image_data_2 = np.zeros(
     (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
 )
 
-ori_data, labels = read(digits = np.arange(10))
-#print(labels)
-data = ori_data/255
-binarizer = preprocessing.Binarizer(threshold=0.5)
-training_data =  binarizer.transform(data)
-#
-# dataset = 'mnist.pkl.gz'
-# f = gzip.open(dataset, 'rb')
-# train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
-# f.close()
-#
+# ori_data, labels = read(digits = np.arange(10))
+# #print(labels)
+# data = ori_data/255
 # binarizer = preprocessing.Binarizer(threshold=0.5)
-# training_data =  binarizer.transform(train_set[0])
-# train_data = test_set[0]
+# training_data =  binarizer.transform(data)
+# #
+dataset = 'mnist.pkl.gz'
+f = gzip.open(dataset, 'rb')
+train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
+f.close()
+
+binarizer = preprocessing.Binarizer(threshold=0.5)
+training_data =  binarizer.transform(train_set[0])
+#train_data = test_set[0]
 
 feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
 feed_data = feed_samplor.get_mean_activation(input_data= training_data)
@@ -93,28 +93,28 @@ feed_mean_activation = np.mean(feed_data, axis=0)
 #a = np.load(savepath1 + 'seeds.npy')
 
 for idx in range(n_samples):
-    index = [i for i in range(len(labels)) if labels[i]== float(idx)]
+    #index = [i for i in range(len(labels)) if labels[i]== float(idx)]
 
-    print(labels[index[0]])
+   # print(labels[index[0]])
 
 
     #feed_data = feed_samplor.get_mean_activation(input_data= training_data[index,:])
 
-    original_samples = training_data[index,:][:n_chains,:]
-    image_data_2[29 * idx:29 * idx + 28, :] = tile_raster_images(
-        X= original_samples,
-        img_shape=(28, 28),
-        tile_shape=(1, n_chains),
-        tile_spacing=(1, 1)
-    )
+    # original_samples = training_data[index,:][:n_chains,:]
+    # image_data_2[29 * idx:29 * idx + 28, :] = tile_raster_images(
+    #     X= original_samples,
+    #     img_shape=(28, 28),
+    #     tile_shape=(1, n_chains),
+    #     tile_spacing=(1, 1)
+    # )
 
 
 #feed_data = sigmoid(np.dot(training_data,W) + b[784:])
 
     #feed_mean_activation = np.mean(feed_data, axis=0)
 
-    persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
-    #persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
+    #persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
+    persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
     # persistent_vis_chain = (persistent_vis_chain + persistent_vis_chain2) % 2
     # print(persistent_vis_chain)
     #seeds += [persistent_vis_chain]
@@ -188,8 +188,8 @@ for idx in range(n_samples):
 image = Image.fromarray(image_data)
 image.save(savepath1 + '/samples.eps')
 
-image = Image.fromarray(image_data_2)
-image.save(savepath1 + '/original_samples.eps')
+# image = Image.fromarray(image_data_2)
+# image.save(savepath1 + '/original_samples.eps')
 #np.save(savepath1 + 'seeds.npy', seeds)
 # a = np.load(savepath1 + 'seeds.npy')
 # print(a[0])
