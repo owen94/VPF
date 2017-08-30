@@ -446,7 +446,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
 if __name__ == '__main__':
 
 
-    learning_rate_list = [0.01]
+    learning_rate_list = [0.0001]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
     hidden_units_list = [[784, 196, 196, 64]]

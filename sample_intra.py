@@ -33,7 +33,7 @@ num_rbm = len(hidden_list) -1
 
 n_chains = 8
 n_samples = 8
-plot_every = 1
+plot_every = 5
 
 temp = 1
 
@@ -75,8 +75,8 @@ feed_mean_activation = np.mean(feed_data, axis=0)
 
 for idx in range(n_samples):
 
-    #persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
-    persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
+    persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
+    #persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
 
 
     v_samples = persistent_vis_chain
