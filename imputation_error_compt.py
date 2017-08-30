@@ -133,7 +133,7 @@ CD = False
 # path_w = '../rbm_baseline/PCD_10/weights_180.npy'
 # path_bvis = '../rbm_baseline/PCD_10/bvis_180.npy'
 # path_bhid = '../rbm_baseline/PCD_10/bhid_180.npy'
-# savepath1 = '../LLD/Samples/'
+# savepath1 = '../LLD/Samples/'enen
 # print(path_w)
 #
 # W = np.load(path_w)
