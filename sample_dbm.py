@@ -65,14 +65,11 @@ image_data_2 = np.zeros(
     (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
 )
 
-
-
 ori_data, labels = read(digits = np.arange(10))
 #print(labels)
 data = ori_data/255
 binarizer = preprocessing.Binarizer(threshold=0.5)
 training_data =  binarizer.transform(data)
-
 #
 # dataset = 'mnist.pkl.gz'
 # f = gzip.open(dataset, 'rb')
