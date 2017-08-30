@@ -171,6 +171,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
                 feed_first_Data += [np.concatenate((feed_first_Data[i-1][:,hidden_list[i-1]:], rand_h), axis=1)]
                 assert feed_first_Data[i].shape[1] == hidden_list[i] + hidden_list[i+1]
 
+
     for n_epoch in range(epoch):
 
         ## propup to get the trainning data
@@ -200,7 +201,8 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
 
                 feed_first_Data[i] = sample_data
 
-                feed_first_Data[i+1][:,:hidden_list[i+1]] = feed_first_Data[i][:, hidden_list[i]:]
+                if i != num_rbm -1 :
+                    feed_first_Data[i+1][:,:hidden_list[i+1]] = feed_first_Data[i][:, hidden_list[i]:]
 
                 assert feed_first is False
 
