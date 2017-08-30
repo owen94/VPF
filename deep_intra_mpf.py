@@ -395,9 +395,9 @@ if __name__ == '__main__':
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    temp_list = [0.5]
+    temp_list = [1, 0.5]
     decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
-    feed_list = [True]
+    feed_list = [False]
 
     undirected_list = [False]
     for undirected in undirected_list:
