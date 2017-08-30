@@ -294,6 +294,52 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
             image = Image.fromarray(image_data)
             image.save(path + '/samples_' + str(n_epoch) + '.png')
 
+
+        if int(n_epoch+1) % 20 ==0:
+
+            n_chains = 20
+            n_samples = 20
+            plot_every = 3
+            image_data_2 = np.zeros(
+                (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
+            )
+
+            feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
+            feed_data = feed_samplor.get_mean_activation(input_data= data)
+
+            feed_mean_activation = np.mean(feed_data, axis=0)
+
+            for idx in range(n_samples):
+                #persistent_vis_chain = np.random.randint(2,size=(n_chains, hidden_list[-1]))
+                feed_initial = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
+
+                v_samples = feed_initial
+
+                for i in range(num_rbm):
+
+                    vis_units = hidden_list[num_rbm-i - 1]
+                    W_sample = W[num_rbm - i -1 ][:vis_units,vis_units:]
+                    b_down = b[num_rbm - i -1 ][:vis_units]
+                    b_up = b[num_rbm - i -1 ][vis_units:]
+
+                    for j in range(plot_every):
+                        downact1 = sigmoid(np.dot(v_samples,W_sample.T) + b_down )
+                        down_sample1 = np.random.binomial(n=1, p= downact1)
+                        upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
+                        v_samples = np.random.binomial(n=1,p=upact1)
+                    v_samples = down_sample1
+                print(' ... plotting sample ', idx)
+
+                image_data_2[29 * idx:29 * idx + 28, :] = tile_raster_images(
+                    X= downact1,
+                    img_shape=(28, 28),
+                    tile_shape=(1, n_chains),
+                    tile_spacing=(1, 1)
+                )
+
+            image = Image.fromarray(image_data_2)
+            image.save(path + '/nomix_samples_' + str(n_epoch) + '.png')
+
     #     if int(n_epoch+1) % 5 == 0:
     #         W = []
     #         b = []
@@ -400,7 +446,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
 if __name__ == '__main__':
 
 
-    learning_rate_list = [0.001]
+    learning_rate_list = [0.01]
     # hyper-parameters are: learning rate, num_samples, sparsity, beta, epsilon, batch_sz, epoches
     # Important ones: num_samples, learning_rate,
     hidden_units_list = [[784, 196, 196, 64]]
@@ -409,7 +455,7 @@ if __name__ == '__main__':
     sparsity_list = [0]
     batch_list = [40]
     temp_list = [1]
-    decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
+    decay_list = [[0.0001, 0.0001, 0.0001, 0.0001], [0.001, 0.001, 0.001, 0.001], [0.00001, 0.00001, 0.00001, 0.00001]]
     feed_list = [True]
 
     undirected_list = [False]

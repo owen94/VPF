@@ -21,8 +21,8 @@ def mix_in(x, w, b, temp, mix = 1):
             x[:,vis_units + i] = h_i
     return x
 
-path_w = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/weight_499.npy'
-path_b = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/bias_499.npy'
+path_w = '../intra_mpf/Fashion/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/weight_99.npy'
+path_b = '../intra_mpf/Fashion/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/bias_99.npy'
 savepath1 = '../intra_mpf/Samples/'
 
 W = np.load(path_w)
@@ -33,7 +33,7 @@ num_rbm = len(hidden_list) -1
 
 n_chains = 8
 n_samples = 8
-plot_every = 3
+plot_every = 1
 
 temp = 1
 
@@ -49,22 +49,22 @@ image_data_2 = np.zeros(
 )
 
 
-#
-# ori_data, labels = read(digits = np.arange(10))
-# #print(labels)
-# data = ori_data/255
-# binarizer = preprocessing.Binarizer(threshold=0.5)
-# training_data =  binarizer.transform(data)
 
-
-dataset = 'mnist.pkl.gz'
-f = gzip.open(dataset, 'rb')
-train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
-f.close()
-
+ori_data, labels = read(digits = np.arange(10))
+#print(labels)
+data = ori_data/255
 binarizer = preprocessing.Binarizer(threshold=0.5)
-training_data =  binarizer.transform(train_set[0])
-train_data = test_set[0]
+training_data =  binarizer.transform(data)
+
+
+# dataset = 'mnist.pkl.gz'
+# f = gzip.open(dataset, 'rb')
+# train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
+# f.close()
+#
+# binarizer = preprocessing.Binarizer(threshold=0.5)
+# training_data =  binarizer.transform(train_set[0])
+# train_data = test_set[0]
 
 feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
 feed_data = feed_samplor.get_mean_activation(input_data= training_data)
@@ -93,9 +93,9 @@ for idx in range(n_samples):
             down_sample1 = np.random.binomial(n=1, p= downact1)
             upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
             v_samples = np.random.binomial(n=1,p=upact1)
-            #
+            # #
             x = np.concatenate((down_sample1,v_samples),axis=1)
-            v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=1)[:,vis_units:]
+            v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=5)[:,vis_units:]
 
 
         v_samples = down_sample1
