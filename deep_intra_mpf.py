@@ -93,7 +93,7 @@ class Deep_intra(object):
 
         return cost, updates
 
-def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batch_sz = 40, epoch = 500):
+def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batch_sz = 40, epoch = 1200):
 
     #data = load_mnist()
 
@@ -455,10 +455,7 @@ if __name__ == '__main__':
     sparsity_list = [0]
     batch_list = [40]
     temp_list = [1]
-    decay_list = [
-                  [0.001, 0.001, 0.001, 0.001],
-                  [0.00001, 0.00001, 0.00001, 0.00001],
-    [0.0001, 0.0001, 0.0001, 0.0001]]
+    decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
     feed_list = [True]
 
     undirected_list = [False]
