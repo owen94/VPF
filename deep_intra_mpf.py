@@ -93,14 +93,14 @@ class Deep_intra(object):
 
         return cost, updates
 
-def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batch_sz = 40, epoch = 1200):
+def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batch_sz = 40, epoch = 500):
 
-    #data = load_mnist()
+    data = load_mnist()
 
-    ori_data, labels = read(digits = np.arange(10))
-    data = ori_data/255
-    binarizer = preprocessing.Binarizer(threshold=0.5)
-    data =  binarizer.transform(data)
+    # ori_data, labels = read(digits = np.arange(10))
+    # data = ori_data/255
+    # binarizer = preprocessing.Binarizer(threshold=0.5)
+    # data =  binarizer.transform(data)
 
     num_rbm = len(hidden_list) -1
     index = T.lscalar()    # index to a mini batch
@@ -247,8 +247,8 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
 
         if int(n_epoch+1) % 20 ==0:
 
-            n_chains = 20
-            n_samples = 20
+            n_chains = 8
+            n_samples = 8
             plot_every = 3
             image_data = np.zeros(
                 (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
@@ -297,8 +297,8 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
 
         if int(n_epoch+1) % 20 ==0:
 
-            n_chains = 20
-            n_samples = 20
+            n_chains = 8
+            n_samples = 8
             plot_every = 3
             image_data_2 = np.zeros(
                 (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
@@ -340,97 +340,97 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
             image = Image.fromarray(image_data_2)
             image.save(path + '/nomix_samples_' + str(n_epoch) + '.png')
 
-    #     if int(n_epoch+1) % 5 == 0:
-    #         W = []
-    #         b = []
-    #         for i in range(num_rbm):
-    #             W.append(deep_intra.W[i].get_value(borrow = True))
-    #             b.append(deep_intra.b[i].get_value(borrow = True))
-    #         dataset = 'mnist.pkl.gz'
-    #         f = gzip.open(dataset, 'rb')
-    #         train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
-    #         f.close()
-    #
-    #         binarizer = preprocessing.Binarizer(threshold=0.5)
-    #         training_data =  binarizer.transform(train_set[0])
-    #         test_data = test_set[0]
-    #         train_data = train_set[0]
-    #
-    #         ##############################################################################
-    #         n_sample = 10000
-    #         plot_every = 3
-    #         ################################################################################
-    #         # for i in range(num_rbm):
-    #         #     feed_vis_units = hidden_list[i]
-    #         #     feed_w = W[i][:feed_vis_units,feed_vis_units:]
-    #         #     feed_b = b[i][feed_vis_units:]
-    #         #     feed_data = sigmoid(np.dot(feed_data, feed_w) + feed_b)
-    #         error_bar_lld = []
-    #         error_bar_std = []
-    #
-    #         #for kk in range(1):
-    #
-    #         feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
-    #         feed_data = feed_samplor.get_mean_activation(input_data= training_data)
-    #
-    #         feed_mean_activation = np.mean(feed_data, axis=0)
-    #         feed_initial = np.random.binomial(n=1, p= feed_mean_activation, size=(n_sample, hidden_list[-1]))
-    #         ###########################################################
-    #
-    #         ######### generate the parzen sample to compute the model distribution ###########
-    #         v_samples = feed_initial
-    #         for i in range(num_rbm):
-    #             vis_units = hidden_list[num_rbm-i - 1]
-    #             W_sample = W[num_rbm - i -1 ][:vis_units,vis_units:]
-    #             b_down = b[num_rbm - i -1 ][:vis_units]
-    #             b_up = b[num_rbm - i -1 ][vis_units:]
-    #
-    #             for j in range(plot_every):
-    #                 downact1 = sigmoid(np.dot(v_samples,W_sample.T) + b_down )
-    #                 down_sample1 = np.random.binomial(n=1, p= downact1)
-    #                 upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
-    #                 v_samples = np.random.binomial(n=1,p=upact1)
-    #
-    #                 x = np.concatenate((down_sample1,v_samples),axis=1)
-    #                 v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=1)[:,vis_units:]
-    #
-    #
-    #             v_samples = down_sample1
-    #
-    #         parzen_sample = downact1
-    #         # compute the log-likelihood for the training data
-    #         # epoch_train_lld = get_ll(x=train_data[:1],
-    #         #                          gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=20)
-    #         # train_mean_lld = np.mean(np.array(epoch_train_lld))
-    #         # train_std_lld = np.std(np.array(epoch_train_lld))
-    #         # train_lld += [train_mean_lld]
-    #         # train_std += [train_std_lld]
-    #         train_mean_lld = 0
-    #
-    #         # comppute the log-likelihood for the test data
-    #         epoch_test_lld = get_ll(x=test_data, gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=10)
-    #         test_mean_lld = np.mean(np.array(epoch_test_lld))
-    #         test_std_lld = np.std(np.array(epoch_test_lld))
-    #         test_lld += [test_mean_lld]
-    #         test_std += [test_std_lld]
-    #
-    #         print('The loglikehood in epoch {} is: train {}, test {}'.format(n_epoch, train_mean_lld, test_mean_lld))
-    #
-    # path_1 = path + '/train_lld.npy'
-    # path_2 = path + '/train_std.npy'
-    # path_3 = path + '/test_lld.npy'
-    # path_4 = path + '/test_std.npy'
-    #
-    #
-    # np.save(path_1, train_lld)
-    # np.save(path_2, train_std)
-    # np.save(path_3, test_lld)
-    # np.save(path_4, test_std)
-    #
-    # print('...............................................')
-    # print(train_lld)
-    # print('...............................................')
-    # print(test_lld)
+        if int(n_epoch+1) % 100 == 0:
+            W = []
+            b = []
+            for i in range(num_rbm):
+                W.append(deep_intra.W[i].get_value(borrow = True))
+                b.append(deep_intra.b[i].get_value(borrow = True))
+            dataset = 'mnist.pkl.gz'
+            f = gzip.open(dataset, 'rb')
+            train_set, valid_set, test_set = pickle.load(f,encoding="bytes")
+            f.close()
+
+            binarizer = preprocessing.Binarizer(threshold=0.5)
+            training_data =  binarizer.transform(train_set[0])
+            test_data = test_set[0]
+            train_data = train_set[0]
+
+            ##############################################################################
+            n_sample = 10000
+            plot_every = 3
+            ################################################################################
+            # for i in range(num_rbm):
+            #     feed_vis_units = hidden_list[i]
+            #     feed_w = W[i][:feed_vis_units,feed_vis_units:]
+            #     feed_b = b[i][feed_vis_units:]
+            #     feed_data = sigmoid(np.dot(feed_data, feed_w) + feed_b)
+            error_bar_lld = []
+            error_bar_std = []
+
+            #for kk in range(1):
+
+            feed_samplor = get_samples(hidden_list=hidden_list, W=W, b=b)
+            feed_data = feed_samplor.get_mean_activation(input_data= training_data)
+
+            feed_mean_activation = np.mean(feed_data, axis=0)
+            feed_initial = np.random.binomial(n=1, p= feed_mean_activation, size=(n_sample, hidden_list[-1]))
+            ###########################################################
+
+            ######### generate the parzen sample to compute the model distribution ###########
+            v_samples = feed_initial
+            for i in range(num_rbm):
+                vis_units = hidden_list[num_rbm-i - 1]
+                W_sample = W[num_rbm - i -1 ][:vis_units,vis_units:]
+                b_down = b[num_rbm - i -1 ][:vis_units]
+                b_up = b[num_rbm - i -1 ][vis_units:]
+
+                for j in range(plot_every):
+                    downact1 = sigmoid(np.dot(v_samples,W_sample.T) + b_down )
+                    down_sample1 = np.random.binomial(n=1, p= downact1)
+                    upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
+                    v_samples = np.random.binomial(n=1,p=upact1)
+
+                    x = np.concatenate((down_sample1,v_samples),axis=1)
+                    v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=1)[:,vis_units:]
+
+
+                v_samples = down_sample1
+
+            parzen_sample = downact1
+            # compute the log-likelihood for the training data
+            # epoch_train_lld = get_ll(x=train_data[:1],
+            #                          gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=20)
+            # train_mean_lld = np.mean(np.array(epoch_train_lld))
+            # train_std_lld = np.std(np.array(epoch_train_lld))
+            # train_lld += [train_mean_lld]
+            # train_std += [train_std_lld]
+            train_mean_lld = 0
+
+            # comppute the log-likelihood for the test data
+            epoch_test_lld = get_ll(x=test_data, gpu_parzen=gpu_parzen(mu=parzen_sample,sigma=0.2),batch_size=10)
+            test_mean_lld = np.mean(np.array(epoch_test_lld))
+            test_std_lld = np.std(np.array(epoch_test_lld))
+            test_lld += [test_mean_lld]
+            test_std += [test_std_lld]
+
+            print('The loglikehood in epoch {} is: train {}, test {}'.format(n_epoch, train_mean_lld, test_mean_lld))
+
+    path_1 = path + '/train_lld.npy'
+    path_2 = path + '/train_std.npy'
+    path_3 = path + '/test_lld.npy'
+    path_4 = path + '/test_std.npy'
+
+
+    np.save(path_1, train_lld)
+    np.save(path_2, train_std)
+    np.save(path_3, test_lld)
+    np.save(path_4, test_std)
+
+    print('...............................................')
+    print(train_lld)
+    print('...............................................')
+    print(test_lld)
 
     loss_savename = path + '/train_loss.eps'
     show_loss(savename= loss_savename, epoch_error= mean_epoch_error)
@@ -454,7 +454,7 @@ if __name__ == '__main__':
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    temp_list = [1]
+    temp_list = [2]
     decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
     feed_list = [True]
 
