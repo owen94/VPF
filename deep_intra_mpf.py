@@ -109,7 +109,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
     x3 = T.matrix('x3')
 
     if len(hidden_list) == 4:
-        path = '../intra_mpf/Fashion/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
+        path = '../intra_mpf/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
                + '_' + str(hidden_list[3]) + '/decay_' + str(decay[1]) + '/lr_' + \
                str(lr)+ '/temp_' + str(temp) + '/' + str(feed_first)
         deep_intra = Deep_intra(hidden_list = hidden_list,
@@ -120,7 +120,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
               batch_sz=batch_sz)
 
     elif len(hidden_list) ==3:
-        path = '../intra_mpf//Fashion/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
+        path = '../intra_mpf/DBM_' + str(hidden_list[1]) + '_' + str(hidden_list[2]) \
                + '/decay_' + str(decay[1]) + '/lr_' + str(lr) + '/temp_' + str(temp) + '/' + str(feed_first)
 
         deep_intra = Deep_intra(hidden_list = hidden_list,
@@ -456,7 +456,7 @@ if __name__ == '__main__':
     batch_list = [40]
     temp_list = [2]
     decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
-    feed_list = [True]
+    feed_list = [False]
 
     undirected_list = [False]
     for undirected in undirected_list:
