@@ -457,7 +457,7 @@ if __name__ == '__main__':
     batch_list = [40]
     temp_list = [2]
     decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
-    feed_list = [False]
+    feed_list = [True]
 
     undirected_list = [False]
     for undirected in undirected_list:
