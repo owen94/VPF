@@ -40,7 +40,7 @@ num_rbm = len(hidden_list) -1
 
 n_chains = 8
 n_samples = 8
-plot_every = 5
+plot_every = 3
 
 temp = 1
 
