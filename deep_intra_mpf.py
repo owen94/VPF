@@ -455,7 +455,7 @@ if __name__ == '__main__':
     beta_list = [0]
     sparsity_list = [0]
     batch_list = [40]
-    temp_list = [2]
+    temp_list = [1]
     decay_list = [[0.0001, 0.0001, 0.0001, 0.0001]]
     feed_list = [True]
 
