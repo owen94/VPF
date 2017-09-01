@@ -424,14 +424,15 @@ def displayNetwork(A,optNormEach=False,optNormAll=True,numColumns=None,imageWidt
         if saveName != '':
             plt.savefig(saveName)
 
-def mix_in(x, w, b, temp, mix = 1):
-    vis_units = 784
+def mix_in(x, vis_units, w, b, temp, mix = 1):
     hid_units = x.shape[1] - vis_units
+    assert hid_units > 0
+    #print(hid_units)
     for j in range(mix):
         for i in range(hid_units):
             input_w = w[:,vis_units + i]
             input_b = b[vis_units + i]
-            act = sigmoid( 1/temp * (np.dot(x,input_w) + input_b))
+            act = sigmoid(1/temp * (np.dot(x,input_w) + input_b))
             h_i = np.random.binomial(n=1, p = act,size=act.shape)
             x[:,vis_units + i] = h_i
     return x

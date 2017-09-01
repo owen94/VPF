@@ -56,7 +56,8 @@ def test_lld_intra(path_w, path_b, plot_every, mix_steps, random_initial, temp =
             v_samples = np.random.binomial(n=1,p=upact1)
 
             x = np.concatenate((down_sample1,v_samples),axis=1)
-            v_samples = mix_in(x=x,w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=mix_steps)[:,vis_units:]
+            v_samples = mix_in(x=x,vis_units= vis_units,
+                               w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=mix_steps)[:,vis_units:]
 
         v_samples = down_sample1
 
