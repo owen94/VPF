@@ -89,7 +89,7 @@ for n_iter in path_list:
     for i in range(10):
         new_path_w = path_w + str(n_iter) + '.npy'
         new_path_b = path_b + str(n_iter) + '.npy'
-        lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=3, mix_steps=1, random_initial= True)
+        lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=3, mix_steps=1, random_initial= False)
 
         iter_lld += [lld_1]
     test_lld += np.mean(iter_lld)
