@@ -79,8 +79,8 @@ feed_mean_activation = np.mean(feed_data, axis=0)
 
 for idx in range(n_samples):
 
-    #persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
-    persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
+    persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
+    #persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
 
 
     v_samples = persistent_vis_chain
@@ -118,7 +118,7 @@ for idx in range(n_samples):
     )
 
 image = Image.fromarray(image_data)
-image.save(savepath1 + '/samples.eps')
+image.save(savepath1 + '/samples.pdf')
 
 
 
