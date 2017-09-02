@@ -340,7 +340,7 @@ def train_dbm(hidden_list, decay, lr, temp, n_round =1, feed_first = True,  batc
         #     image = Image.fromarray(image_data_2)
         #     image.save(path + '/nomix_samples_' + str(n_epoch) + '.png')
 
-        if int(n_epoch+1) >= 99 and int(n_epoch+1)% 5 == 0:
+        if int(n_epoch+1)% 5 == 0:
             W = []
             b = []
             for i in range(num_rbm):
