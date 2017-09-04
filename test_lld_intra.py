@@ -55,9 +55,9 @@ def test_lld_intra(path_w, path_b, plot_every, mix_steps, random_initial, temp =
             upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
             v_samples = np.random.binomial(n=1,p=upact1)
 
-            x = np.concatenate((down_sample1,v_samples),axis=1)
-            v_samples = mix_in(x=x,vis_units= vis_units,
-                               w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=mix_steps)[:,vis_units:]
+            # x = np.concatenate((down_sample1,v_samples),axis=1)
+            # v_samples = mix_in(x=x,vis_units= vis_units,
+            #                    w=W[num_rbm - i -1 ],b=b[num_rbm - i -1 ], temp=temp, mix=mix_steps)[:,vis_units:]
 
         v_samples = down_sample1
 
@@ -76,20 +76,24 @@ def test_lld_intra(path_w, path_b, plot_every, mix_steps, random_initial, temp =
 plot_list = [3]
 mix_lis = [1]
 random_list = [True, False]
-path_list = [499]
-path_w = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/weight_'
-path_b = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/bias_'
-save_path = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/'
+path_list = [199, 299, 399, 499]
+# path_w = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/weight_'
+# path_b = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/bias_'
+# save_path = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/'
+#
 
+path_w = '../LLD/lr_0.001//weight_'
+path_b = '../LLD/lr_0.001//bias_'
+save_path = '../LLD/lr_0.001/'
 
 test_lld = []
 test_std = []
 for n_iter in path_list:
     iter_lld = []
-    for i in range(10):
+    for i in range(1):
         new_path_w = path_w + str(n_iter) + '.npy'
         new_path_b = path_b + str(n_iter) + '.npy'
-        lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=3, mix_steps=1, random_initial= False)
+        lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=5, mix_steps=1, random_initial= True)
 
         iter_lld += [lld_1]
     test_lld += [np.mean(iter_lld)]
