@@ -76,7 +76,7 @@ def test_lld_intra(path_w, path_b, plot_every, mix_steps, random_initial, temp =
 plot_list = [3]
 mix_lis = [1]
 random_list = [True, False]
-path_list = [199, 299, 399, 499]
+path_list = [199]
 # path_w = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/weight_'
 # path_b = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/bias_'
 # save_path = '../intra_mpf/DBM_196_196_64/decay_0.0001/lr_0.001/temp_1/True/'
@@ -90,7 +90,7 @@ test_lld = []
 test_std = []
 for n_iter in path_list:
     iter_lld = []
-    for i in range(1):
+    for i in range(10):
         new_path_w = path_w + str(n_iter) + '.npy'
         new_path_b = path_b + str(n_iter) + '.npy'
         lld_1 =  test_lld_intra(path_w=new_path_w, path_b=new_path_b, plot_every=5, mix_steps=1, random_initial= True)
@@ -100,7 +100,7 @@ for n_iter in path_list:
     test_std += [np.std(iter_lld)]
 
 print(test_lld)
-print(test_lld)
+print(test_std)
 savename_1 = save_path + 'check_lld.npy'
 savename_2 = save_path + 'check_std.npy'
 np.save(savename_1, test_lld)
