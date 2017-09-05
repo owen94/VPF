@@ -30,13 +30,13 @@ from get_samples import get_samples
 # path_b = '../DBM_results/Samples/196_64/bias_599.npy'
 # savepath1 = '../DBM_results/Samples/196_64'
 
-path_w = '../LLD/Fashion/DBM_196_196_64/decay_0.0001/lr_0.001/weight_399.npy'
-path_b = '../LLD/Fashion/DBM_196_196_64/decay_0.0001/lr_0.001/bias_399.npy'
-savepath1 = '../LLD/Fashion/Samples/'
+# path_w = '../LLD/Fashion/DBM_196_196_64/decay_0.0001/lr_0.001/weight_399.npy'
+# path_b = '../LLD/Fashion/DBM_196_196_64/decay_0.0001/lr_0.001/bias_399.npy'
+# savepath1 = '../LLD/Fashion/Samples/'
 
-# path_w = '../LLD/DBM_196_196_64/decay_0.0001/lr_0.001/weight_499.npy'
-# path_b = '../LLD/DBM_196_196_64/decay_0.0001/lr_0.001/bias_499.npy'
-# savepath1 = '../LLD/Samples/'
+path_w = '../LLD/DBM_196_196_64/decay_0.001/lr_0.001/weight_199.npy'
+path_b = '../LLD/DBM_196_196_64/decay_0.001/lr_0.001/bias_199.npy'
+savepath1 = '../LLD/Samples/'
 
 # path_w = '../LLD/hidden_100/decay_0.0001/lr_0.0001/bsz_40/weights_199.npy'
 # path_b = '../LLD/hidden_100/decay_0.0001/lr_0.0001/bsz_40/bias_199.npy'
@@ -56,7 +56,7 @@ num_rbm = len(hidden_list) -1
 
 n_chains = 8
 n_samples = 8
-plot_every = 3
+plot_every = 5
 image_data = np.zeros(
     (29 * n_samples + 1, 29 * n_chains - 1), dtype='uint8'
 )
@@ -100,32 +100,32 @@ for idx in range(n_samples):
     #index = [i for i in range(len(labels)) if labels[i]== float(idx)]
 
    # print(labels[index[0]])
-    index = np.random.randint(training_data.shape[0], size=(n_chains,))
-
-    #feed_data = feed_samplor.get_mean_activation(input_data= training_data[index,:])
-
-    original_samples = training_data[index,:]
-    image_data_2[29 * idx:29 * idx + 28, :] = tile_raster_images(
-        X= original_samples,
-        img_shape=(28, 28),
-        tile_shape=(1, n_chains),
-        tile_spacing=(1, 1)
-    )
-    original_samples_float = data[index,:]
-    image_data_3[29 * idx:29 * idx + 28, :] = tile_raster_images(
-        X= original_samples_float,
-        img_shape=(28, 28),
-        tile_shape=(1, n_chains),
-        tile_spacing=(1, 1)
-    )
+   #  index = np.random.randint(training_data.shape[0], size=(n_chains,))
+   #
+   #  #feed_data = feed_samplor.get_mean_activation(input_data= training_data[index,:])
+   #
+   #  original_samples = training_data[index,:]
+   #  image_data_2[29 * idx:29 * idx + 28, :] = tile_raster_images(
+   #      X= original_samples,
+   #      img_shape=(28, 28),
+   #      tile_shape=(1, n_chains),
+   #      tile_spacing=(1, 1)
+   #  )
+   #  original_samples_float = data[index,:]
+   #  image_data_3[29 * idx:29 * idx + 28, :] = tile_raster_images(
+   #      X= original_samples_float,
+   #      img_shape=(28, 28),
+   #      tile_shape=(1, n_chains),
+   #      tile_spacing=(1, 1)
+   #  )
 
 
 #feed_data = sigmoid(np.dot(training_data,W) + b[784:])
 
     #feed_mean_activation = np.mean(feed_data, axis=0)
 
-    persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
-    #persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
+    #persistent_vis_chain = np.random.binomial(n=1, p= feed_mean_activation, size=(n_chains, hidden_list[-1]))
+    persistent_vis_chain = np.random.binomial(n=1, p= 0.5, size=(n_chains, hidden_list[-1]))
     # persistent_vis_chain = (persistent_vis_chain + persistent_vis_chain2) % 2
     # print(persistent_vis_chain)
     #seeds += [persistent_vis_chain]
@@ -197,13 +197,13 @@ for idx in range(n_samples):
 
 
 image = Image.fromarray(image_data)
-image.save(savepath1 + '/fashion_samples.eps')
+image.save(savepath1 + '/samples.eps')
 
-image = Image.fromarray(image_data_2)
-image.save(savepath1 + '/original_samples.eps')
-
-image = Image.fromarray(image_data_3)
-image.save(savepath1 + '/original_samples_float.eps')
+# image = Image.fromarray(image_data_2)
+# image.save(savepath1 + '/original_samples.eps')
+#
+# image = Image.fromarray(image_data_3)
+# image.save(savepath1 + '/original_samples_float.eps')
 #np.save(savepath1 + 'seeds.npy', seeds)
 # a = np.load(savepath1 + 'seeds.npy')
 # print(a[0])

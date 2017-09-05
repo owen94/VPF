@@ -165,17 +165,16 @@ def get_intra_mpf_params(visible_units, hidden_units):
     W_xh = numpy_rng.randn(visible_units,hidden_units)/np.sqrt(visible_units*hidden_units)
     W_up = np.concatenate((np.zeros((visible_units,visible_units)), W_xh), axis = 1)
     W_hh = numpy_rng.randn(hidden_units,hidden_units)/np.sqrt(hidden_units*hidden_units)
-
+    W_hh = (W_hh + W_hh.T)/2
     a = np.ones((hidden_units,hidden_units))
     b = np.diagflat(np.ones(hidden_units))
     a = a - b
-
     W_hh *= a # make the diaganal parameters be zero for hh
+    W_hh = (W_hh + W_hh.T)/2
     W_down = np.concatenate((W_xh.T,W_hh), axis = 1 )
     W = np.concatenate((W_up,W_down), axis = 0)
 
     print(W.shape)
-
     return W
 
 def read(digits, dataset = "training", path = "."):

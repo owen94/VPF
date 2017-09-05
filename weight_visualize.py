@@ -5,6 +5,7 @@ At the same time, we also visualize the activations in the hidden units.
 import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
+matplotlib.rcParams['text.usetex'] = True
 
 
 import numpy as np
@@ -61,7 +62,7 @@ data = load_mnist()
 activations = sigmoid(np.dot(data[:10000], W) + b[W.shape[0]:])
 
 activations = np.mean(activations, axis = 0)
-saveName1 = '../DBN_results/activations/activations.eps'
+saveName1 = '../DBN_results/activations/activations.pdf'
 fig1 = plt.figure()
 # ax1 = fig1.add_subplot(111)
 # ax1.set_title('Mean activations')
