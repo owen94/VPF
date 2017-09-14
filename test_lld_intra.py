@@ -52,8 +52,8 @@ def test_lld_intra(path_w, path_b, plot_every, mix_steps, random_initial, temp =
         for j in range(plot_every):
             downact1 = sigmoid(np.dot(v_samples,W_sample.T) + b_down )
             down_sample1 = np.random.binomial(n=1, p= downact1)
-            # upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
-            # v_samples = np.random.binomial(n=1,p=upact1)
+            upact1 = sigmoid(np.dot(down_sample1,W_sample)+b_up)
+            v_samples = np.random.binomial(n=1,p=upact1)
 
             x = np.concatenate((down_sample1,v_samples),axis=1)
             v_samples = mix_in(x=x,vis_units= vis_units,
